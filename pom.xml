@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.epam.rd</groupId>
+    <artifactId>rd-epam-java-2020-store</artifactId>
+    <packaging>pom</packaging>
+    <version>0.0.1</version>
+
+    <name>store-root</name>
+
+    <modules>
+        <module>store-api</module>
+        <module>store-db</module>
+        <module>store-impl</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.plugin.source.version>11</maven.compiler.plugin.source.version>
+        <maven.compiler.plugin.target.version>11</maven.compiler.plugin.target.version>
+
+        <maven.site.plugin.output.encoding>UTF-8</maven.site.plugin.output.encoding>
+        <maven.site.plugin.version>3.9.0</maven.site.plugin.version>
+
+        <lombok.version>1.18.12</lombok.version>
+        <slf4j.version>1.2.3</slf4j.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${maven.compiler.plugin.source.version}</source>
+                    <target>${maven.compiler.plugin.target.version}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>${maven.site.plugin.version}</version>
+                <configuration>
+                    <outputEncoding>${maven.site.plugin.output.encoding}</outputEncoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- slf4g -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
