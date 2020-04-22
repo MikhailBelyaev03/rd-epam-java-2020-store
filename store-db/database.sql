@@ -107,5 +107,5 @@ insert into store.st_client_order_items(id, product_id, order_id, quantity) valu
 
 insert into store.st_payment(id,ogrn_shop,kpp_shop,inn_shop,payment_account_shop,ogrn_client,kpp_client, inn_client, payment_account_client, key, amount, callback_url, status , supplier_order_id, client_order_id) values
 ('da92a3a1-08ba-4aad-af93-2651b1a61cd4','111','222', '333', '444','555','666', '777', '888','02b1be0d48924c327124732726097157','30000','https://shop.ru','Совершен','9701b1a0-6c5b-407a-be72-3c6b6a0d433e',NULL),
-('da92a3a1-08ba-4aad-af93-2651b1a62cd4','000','001', '002', '003','004','005', '006', '007','02b1be0d48924c328124732726097157','20000','https://shop.ru','Совершен',NULL,'9701b1a0-6c5b-407a-be72-3c6b6a0d222e')
+('da92a3a1-08ba-4aad-af93-2651b1a62cd4','000','001', '002', '003','004','005', '006', '007','02b1be0d48924c328124732726097157','20000','https://shop.ru','Совершен',NULL,'9701b1a0-6c5b-407a-be72-3c6b6a0d111e');
 
