@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+         http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
+
+    <changeSet id="2020-04-24-create-table-product" author="Shkryl">
+        <createTable schemaName="${schema_name}" tableName="${prefix}product">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar"/>
+            <column name="description" type="text"/>
+            <column name="external_product_id" type="UUID"/>
+        </createTable>
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}product"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-24-create-table-catalog" author="Shkryl">
+        <createTable schemaName="${schema_name}" tableName="${prefix}catalog">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_id" type="UUID"/>
+            <column name="name" type="varchar"/>
+            <column name="quantity" type="int8"/>
+            <column name="external_product_id" type="UUID"/>
+        </createTable>
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}catalog"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-24-create-table-supplier_order" author="Shkryl">
+        <createTable schemaName="${schema_name}" tableName="${prefix}supplier_order">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="amount" type="int8"/>
+            <column name="status" type="varchar"/>
+            <column name="payment_callback_url" type="varchar"/>
+            <column name="payment_id" type="UUID"/>
+        </createTable>
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}supplier_order"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-24-create-table-supplier_order_items" author="Shkryl">
+        <createTable schemaName="${schema_name}" tableName="${prefix}supplier_order_items">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_id" type="UUID"/>
+            <column name="order_id" type="UUID"/>
+            <column name="quantity" type="int8"/>
+        </createTable>
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}supplier_order_items"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-24-create-table-client_order" author="Shkryl">
+        <createTable schemaName="${schema_name}" tableName="${prefix}client_order">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="amount" type="int8"/>
+            <column name="status" type="varchar"/>
+            <column name="payment_id" type="UUID"/>
+        </createTable>
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}client_order"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-24-create-table-client_order_items" author="Shkryl">
+        <createTable schemaName="${schema_name}" tableName="${prefix}client_order_items">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_id" type="UUID"/>
+            <column name="order_id" type="UUID"/>
+            <column name="quantity" type="int8"/>
+        </createTable>
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}client_order_items"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-24-create-table-payment" author="Shkryl">
+        <createTable schemaName="${schema_name}" tableName="${prefix}payment">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="ogrn_shop" type="varchar"/>
+            <column name="kpp_shop" type="varchar"/>
+            <column name="inn_shop" type="varchar"/>
+            <column name="payment_account_shop" type="varchar"/>
+            <column name="ogrn_client" type="varchar"/>
+            <column name="kpp_client" type="varchar"/>
+            <column name="inn_client" type="varchar"/>
+            <column name="payment_account_client" type="varchar"/>
+            <column name="key" type="varchar"/>
+            <column name="amount" type="int8"/>
+            <column name="callback_url" type="varchar"/>
+            <column name="status" type="varchar"/>
+            <column name="supplier_order_id" type="UUID"/>
+            <column name="client_order_id" type="UUID"/>
+        </createTable>
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}payment"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="Shkryl" id="2020-04-24-add-foreign-key-catalog_to_product">
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="${prefix}catalog" baseTableSchemaName="${schema_name}" constraintName="catalog_to_product" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="${prefix}product" referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+
+    <changeSet author="Shkryl" id="2020-04-24-add-foreign-key-supplier_order_items_to_product">
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="${prefix}supplier_order_items" baseTableSchemaName="${schema_name}" constraintName="supplier_order_items_to_product" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="${prefix}product" referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+    <changeSet author="Shkryl" id="2020-04-24-add-foreign-key-supplier_order_items_to_supplier_order">
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="${prefix}supplier_order_items" baseTableSchemaName="${schema_name}" constraintName="supplier_order_items_to_supplier_order" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="${prefix}supplier_order" referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+
+    <changeSet author="Shkryl" id="2020-04-24-add-foreign-key-client_order_items_to_product">
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="${prefix}client_order_items" baseTableSchemaName="${schema_name}" constraintName="client_order_items_to_product" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="${prefix}product" referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+    <changeSet author="Shkryl" id="2020-04-24-add-foreign-key-client_order_items_to_client_order">
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="${prefix}client_order_items" baseTableSchemaName="${schema_name}" constraintName="client_order_items_to_client_order" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="${prefix}client_order" referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+
+    <changeSet author="Shkryl" id="2020-04-24-add-foreign-key-payment_to_supplier_order">
+        <addForeignKeyConstraint baseColumnNames="supplier_order_id" baseTableName="${prefix}payment" baseTableSchemaName="${schema_name}" constraintName="payment_to_supplier_order" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="${prefix}supplier_order" referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+    <changeSet author="Shkryl" id="2020-04-24-add-foreign-key-payment_to_client_order">
+        <addForeignKeyConstraint baseColumnNames="client_order_id" baseTableName="${prefix}payment" baseTableSchemaName="${schema_name}" constraintName="payment_to_client_order" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="${prefix}client_order" referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+
+
+</databaseChangeLog>
+

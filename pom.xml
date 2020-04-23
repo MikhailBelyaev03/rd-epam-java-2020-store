@@ -27,6 +27,8 @@
         <lombok.version>1.18.12</lombok.version>
         <slf4j.version>1.2.3</slf4j.version>
         <hibernate.version>5.4.14.Final</hibernate.version>
+        <liquibase-core.version>3.8.9</liquibase-core.version>
+        <liquibase-maven-plugin.version>3.8.9</liquibase-maven-plugin.version>
         <postgresql.version>42.2.12</postgresql.version>
     </properties>
 
@@ -56,6 +58,17 @@
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-entitymanager</artifactId>
                 <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase-core.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.liquibase/liquibase-maven-plugin -->
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase-maven-plugin.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
             <dependency>
