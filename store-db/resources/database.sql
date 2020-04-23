@@ -86,7 +86,6 @@ references store.st_client_order(id);
 -- select, insert, update, delete, truncate
 -- использовать sequences
 -- запуск functions
-select * from pg_shadow;
 
 -- Создадим пользователя
 create user store_user with password 'store_user';
