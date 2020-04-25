@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <property name="schema_name" value="store"/>
+    <property name="prefix" value="st_"/>
+
+    <include file="changelog/v1.0/v1.0-01_init-db.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/v1.0/v1.0-02_drop_and_add-user.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/v1.0/v1.0-03_drop_and_create_schema.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/changelog-3.8.xsd">
+
+    <changeSet id="add-user-store_user" author="Belousov">
+        <!-- Drop user -->
+        <sql dbms="postgresql" endDelimiter=";">
+            drop store_user
+        </sql>
+        <!-- Add user -->
+        <sql dbms="postresql" endDelimiter=";">
+            create store_user with password 'store_user'
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/changelog-3.8.xsd">
+
+    <!-- Create table st_product -->
+    <changeSet id="create-table-product" author="Belousov">
+        <createTable
+                schemaName="${schema_name}"
+                tableName="${prefix}product">
+            
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <column name="name" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="description" type="text">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="external_product_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Create table st_catalog -->
+    <changeSet id="create-table-catalog" author="Belousov">
+        <createTable
+                schemaName="${schema_name}"
+                tableName="${prefix}catalog">
+            
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <column name="product_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="quantity" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <!-- Add foreign key on st_catalog table to st_product -->
+    <changeSet id="add-foreign-key-on-catalog_to_product" author="Belousov">
+        <addForeignKeyConstraint
+                                baseColumnNames="product_id"
+                                baseTableName="${prefix}catalog"
+                                baseTableSchemaName="${schema_name}"
+                                constraintName="fk_catalog_to_product"
+                                referencedColumnNames="id"
+                                referencedTableName="${prefix}product"
+                                referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+
+    <!-- Create table st_client_order -->
+    <changeSet id="create-table-client_order" author="Belousov">
+        <createTable
+                schemaName="${schema_name}"
+                tableName="${prefix}client_order">
+
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <column name="amount" type="int8">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="status" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="payment_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Create table st_client_order_items -->
+    <changeSet id="create-table-client_order_items" author="Belousov">
+        <createTable
+                schemaName="${schema_name}"
+                tableName="${prefix}client_order_items">
+            
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <column name="product_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="order_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="quantity" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Add foreign key on st_client_order_items table to st_product -->
+    <changeSet id="add-foreign-key-on-client_order_items_to_product" author="Belousov">
+        <addForeignKeyConstraint
+                baseColumnNames="product_id"
+                baseTableName="${prefix}client_order_items"
+                baseTableSchemaName="${schema_name}"
+                constraintName="fk_client_order_items_to_product"
+                referencedColumnNames="id"
+                referencedTableName="${prefix}product"
+                referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+    <!-- Add foreign key on st_client_order_items table to st_client_order -->
+    <changeSet id="add-foreign-key-on-client_order_items_to_client_order" author="Belousov">
+        <addForeignKeyConstraint
+                baseColumnNames="order_id"
+                baseTableName="${prefix}client_order_items"
+                baseTableSchemaName="${schema_name}"
+                constraintName="fk_client_order_items_to_client_order"
+                referencedColumnNames="id"
+                referencedTableName="${prefix}client_order"
+                referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+
+    <!-- Create table st_supplier_order -->
+    <changeSet id="create-table-supplier_order" author="Belousov">
+        <createTable
+                schemaName="${schema_name}"
+                tableName="${prefix}supplier_order">
+
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <column name="amount" type="int8">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="status" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="payment_callback_url" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="payment_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Create table st_supplier_order_items -->
+    <changeSet id="create-table-supplier_order_items" author="Belousov">
+        <createTable
+                schemaName="${schema_name}"
+                tableName="${prefix}supplier_order_items">
+
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <column name="product_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="order_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="quantity" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Add foreign key on st_supplier_order_items table to st_product -->
+    <changeSet id="add-foreign-key-on-supplier_order_items_to_product" author="Belousov">
+        <addForeignKeyConstraint
+                baseColumnNames="product_id"
+                baseTableName="${prefix}supplier_order_items"
+                baseTableSchemaName="${schema_name}"
+                constraintName="fk_supplier_order_items_to_product"
+                referencedColumnNames="id"
+                referencedTableName="${prefix}product"
+                referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+    <!-- Add foreign key on st_supplier_order_items table to st_supplier_order -->
+    <changeSet id="add-foreign-key-on-client_order_items_to_product" author="Belousov">
+        <addForeignKeyConstraint
+                baseColumnNames="order_id"
+                baseTableName="${prefix}supplier_order_items"
+                baseTableSchemaName="${schema_name}"
+                constraintName="fk_supplier_order_items_to_product"
+                referencedColumnNames="id"
+                referencedTableName="${prefix}supplier_order"
+                referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+
+    <!-- Create table st_payment -->
+    <changeSet id="create-table-st_payment" author="Belousov">
+        <createTable
+                schemaName="${schema_name}"
+                tableName="${prefix}payment">
+
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <column name="orgn_shop" type="varchar(13)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="kpp_shop" type="varchar(9)">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="inn_shop" type="varchar(12)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="payment_account_shop" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="orgn_client" type="varchar(13)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="kpp_client" type="varchar(9)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="inn_client" type="varchar(12)">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="payment_account_client" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="key" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="amount" type="int8">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="callback_url" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="supplier_order_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="client_order_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Add foreign key on st_payment table to st_supplier_order -->
+    <changeSet id="add-foreign-key-on-payment_to_supplier_order" author="Belousov">
+        <addForeignKeyConstraint
+                                 baseColumnNames="supplier_order_id"
+                                 baseTableName="${prefix}payment"
+                                 baseTableSchemaName="${schema_name}"
+                                 constraintName="fk_payment_to_supplier_order"
+                                 referencedColumnNames="id"
+                                 referencedTableName="${prefix}supplier_order"
+                                 referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+
+    <!-- Add foreign key on st_payment table to st_client_order -->
+    <changeSet id="add-foreign-key-on-payment_to_client_order" author="Belousov">
+        <addForeignKeyConstraint
+                                 baseColumnNames="client_order_id"
+                                 baseTableName="${prefix}payment"
+                                 baseTableSchemaName="${schema_name}"
+                                 constraintName="fk_payment_to_client_order"
+                                 referencedColumnNames="id"
+                                 referencedTableName="${prefix}client_order"
+                                 referencedTableSchemaName="${schema_name}"/>
+    </changeSet>
+</databaseChangeLog>

@@ -26,10 +26,15 @@
 
         <lombok.version>1.18.12</lombok.version>
         <slf4j.version>1.2.3</slf4j.version>
+
+        <liquibase.core.version>3.8.9</liquibase.core.version>
+        <liquibase.maven.plugin.version>3.8.9</liquibase.maven.plugin.version>
+        <postgresql.version>42.2.12.jre7</postgresql.version>
     </properties>
 
     <build>
         <plugins>
+            <!-- maven-compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -40,6 +45,7 @@
                 </configuration>
             </plugin>
 
+            <!-- maven-site -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -66,6 +72,27 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+
+            <!-- JDBC driver for DB -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+            </dependency>
+
+            <!-- liquibase -->
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.core.version}</version>
+            </dependency>
+
+            <!-- liquibase maven plugin -->
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase.maven.plugin.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
