@@ -12,7 +12,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/changelog-3.8.xsd">
 
     <!-- Create table st_product -->
-    <changeSet id="create-table-product" author="Belousov">
+    <changeSet id="2020-04-25-create-table-product" author="Belousov">
         <createTable
                 schemaName="${schema_name}"
                 tableName="${prefix}product">
@@ -36,7 +36,7 @@
     </changeSet>
 
     <!-- Create table st_catalog -->
-    <changeSet id="create-table-catalog" author="Belousov">
+    <changeSet id="2020-04-25-create-table-catalog" author="Belousov">
         <createTable
                 schemaName="${schema_name}"
                 tableName="${prefix}catalog">
@@ -56,7 +56,7 @@
     </changeSet>
     
     <!-- Add foreign key on st_catalog table to st_product -->
-    <changeSet id="add-foreign-key-on-catalog_to_product" author="Belousov">
+    <changeSet id="2020-04-25-add-foreign-key-catalog_to_product" author="Belousov">
         <addForeignKeyConstraint
                                 baseColumnNames="product_id"
                                 baseTableName="${prefix}catalog"
@@ -68,7 +68,7 @@
     </changeSet>
 
     <!-- Create table st_client_order -->
-    <changeSet id="create-table-client_order" author="Belousov">
+    <changeSet id="2020-04-25-create-table-client_order" author="Belousov">
         <createTable
                 schemaName="${schema_name}"
                 tableName="${prefix}client_order">
@@ -92,7 +92,7 @@
     </changeSet>
 
     <!-- Create table st_client_order_items -->
-    <changeSet id="create-table-client_order_items" author="Belousov">
+    <changeSet id="2020-04-25-create-table-client_order_items" author="Belousov">
         <createTable
                 schemaName="${schema_name}"
                 tableName="${prefix}client_order_items">
@@ -116,7 +116,7 @@
     </changeSet>
 
     <!-- Add foreign key on st_client_order_items table to st_product -->
-    <changeSet id="add-foreign-key-on-client_order_items_to_product" author="Belousov">
+    <changeSet id="2020-04-25-add-foreign-key-client_order_items_to_product" author="Belousov">
         <addForeignKeyConstraint
                 baseColumnNames="product_id"
                 baseTableName="${prefix}client_order_items"
@@ -127,7 +127,7 @@
                 referencedTableSchemaName="${schema_name}"/>
     </changeSet>
     <!-- Add foreign key on st_client_order_items table to st_client_order -->
-    <changeSet id="add-foreign-key-on-client_order_items_to_client_order" author="Belousov">
+    <changeSet id="2020-04-25-add-foreign-key-client_order_items_to_client_order" author="Belousov">
         <addForeignKeyConstraint
                 baseColumnNames="order_id"
                 baseTableName="${prefix}client_order_items"
@@ -139,7 +139,7 @@
     </changeSet>
 
     <!-- Create table st_supplier_order -->
-    <changeSet id="create-table-supplier_order" author="Belousov">
+    <changeSet id="2020-04-25-create-table-supplier_order" author="Belousov">
         <createTable
                 schemaName="${schema_name}"
                 tableName="${prefix}supplier_order">
@@ -167,7 +167,7 @@
     </changeSet>
 
     <!-- Create table st_supplier_order_items -->
-    <changeSet id="create-table-supplier_order_items" author="Belousov">
+    <changeSet id="2020-04-25-create-table-supplier_order_items" author="Belousov">
         <createTable
                 schemaName="${schema_name}"
                 tableName="${prefix}supplier_order_items">
@@ -191,7 +191,7 @@
     </changeSet>
 
     <!-- Add foreign key on st_supplier_order_items table to st_product -->
-    <changeSet id="add-foreign-key-on-supplier_order_items_to_product" author="Belousov">
+    <changeSet id="2020-04-25-add-foreign-key-supplier_order_items_to_product" author="Belousov">
         <addForeignKeyConstraint
                 baseColumnNames="product_id"
                 baseTableName="${prefix}supplier_order_items"
@@ -202,7 +202,7 @@
                 referencedTableSchemaName="${schema_name}"/>
     </changeSet>
     <!-- Add foreign key on st_supplier_order_items table to st_supplier_order -->
-    <changeSet id="add-foreign-key-on-client_order_items_to_product" author="Belousov">
+    <changeSet id="2020-04-25-add-foreign-key-client_order_items_to_product" author="Belousov">
         <addForeignKeyConstraint
                 baseColumnNames="order_id"
                 baseTableName="${prefix}supplier_order_items"
@@ -214,7 +214,7 @@
     </changeSet>
 
     <!-- Create table st_payment -->
-    <changeSet id="create-table-st_payment" author="Belousov">
+    <changeSet id="2020-04-25-create-table-st_payment" author="Belousov">
         <createTable
                 schemaName="${schema_name}"
                 tableName="${prefix}payment">
@@ -282,7 +282,7 @@
     </changeSet>
 
     <!-- Add foreign key on st_payment table to st_supplier_order -->
-    <changeSet id="add-foreign-key-on-payment_to_supplier_order" author="Belousov">
+    <changeSet id="2020-04-25-add-foreign-key-payment_to_supplier_order" author="Belousov">
         <addForeignKeyConstraint
                                  baseColumnNames="supplier_order_id"
                                  baseTableName="${prefix}payment"
@@ -294,7 +294,7 @@
     </changeSet>
 
     <!-- Add foreign key on st_payment table to st_client_order -->
-    <changeSet id="add-foreign-key-on-payment_to_client_order" author="Belousov">
+    <changeSet id="2020-04-25-add-foreign-key-payment_to_client_order" author="Belousov">
         <addForeignKeyConstraint
                                  baseColumnNames="client_order_id"
                                  baseTableName="${prefix}payment"
