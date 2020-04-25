@@ -202,12 +202,12 @@
                 referencedTableSchemaName="${schema_name}"/>
     </changeSet>
     <!-- Add foreign key on st_supplier_order_items table to st_supplier_order -->
-    <changeSet id="2020-04-25-add-foreign-key-client_order_items_to_product" author="Belousov">
+    <changeSet id="2020-04-25-add-foreign-key-supplier_order_items_to_supplier_order" author="Belousov">
         <addForeignKeyConstraint
                 baseColumnNames="order_id"
                 baseTableName="${prefix}supplier_order_items"
                 baseTableSchemaName="${schema_name}"
-                constraintName="fk_supplier_order_items_to_product"
+                constraintName="fk_supplier_order_items_to_supplier_order"
                 referencedColumnNames="id"
                 referencedTableName="${prefix}supplier_order"
                 referencedTableSchemaName="${schema_name}"/>
