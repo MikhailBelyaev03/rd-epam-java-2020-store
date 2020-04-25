@@ -10,4 +10,45 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>store-db</artifactId>
+
+    <properties>
+        <liquibase.host>localhost</liquibase.host>
+        <liquibase.port>5432</liquibase.port>
+        <liquibase.db>courses</liquibase.db>
+        <liquibase.schema>store</liquibase.schema>
+        <liquibase.user>store_user</liquibase.user>
+        <liquibase.password>store_user</liquibase.password>
+        <liquibase.changelogfile>src/main/resources/db/db-payment-changelog.xml</liquibase.changelogfile>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase.version}</version>
+                <configuration>
+                    <outputFileEncoding>UTF-8</outputFileEncoding>
+                    <driver>org.postgresql.Driver</driver>
+                    <url>jdbc:postgresql://${liquibase.host}:${liquibase.port}/${liquibase.db}?currentSchema=${liquibase.schema}</url>
+                    <username>${liquibase.user}</username>
+                    <password>${liquibase.password}</password>
+                    <changeLogFile>${liquibase.changelogfile}</changeLogFile>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

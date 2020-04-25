@@ -20,48 +20,53 @@
     <properties>
         <maven.compiler.plugin.source.version>11</maven.compiler.plugin.source.version>
         <maven.compiler.plugin.target.version>11</maven.compiler.plugin.target.version>
-
-        <maven.site.plugin.output.encoding>UTF-8</maven.site.plugin.output.encoding>
-        <maven.site.plugin.version>3.9.0</maven.site.plugin.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <lombok.version>1.18.12</lombok.version>
-        <slf4j.version>1.2.3</slf4j.version>
-        <hibernate.version>5.4.14.Final</hibernate.version>
+        <logback-classic.version>1.2.3</logback-classic.version>
         <postgresql.version>42.2.12</postgresql.version>
+        <liquibase.version>3.8.9</liquibase.version>
+        <hibernate.version>5.4.14.Final</hibernate.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <!-- lombok -->
+            <!-- Utils -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
-                <scope>provided</scope>
             </dependency>
-            <!-- slf4g -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>${slf4j.version}</version>
+                <version>${logback-classic.version}</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
                 <version>${hibernate.version}</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-entitymanager -->
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-entitymanager</artifactId>
                 <version>${hibernate.version}</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.liquibase/liquibase-maven-plugin -->
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -77,13 +82,11 @@
                     <target>${maven.compiler.plugin.target.version}</target>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>${maven.site.plugin.version}</version>
                 <configuration>
-                    <outputEncoding>${maven.site.plugin.output.encoding}</outputEncoding>
+                    <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
                 </configuration>
             </plugin>
         </plugins>
