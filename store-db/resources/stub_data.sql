@@ -14,12 +14,12 @@ insert into store.st_client_order(id,amount,status, payment_id) values
 ('5ad8e8a5-5973-4c75-b0f3-c3c29428fa1a','100000','обрабатывается', 'e372a36c-c06a-4fcb-a476-91bae0e1c22a'),
 ('556d8eee-7e64-4c10-929a-56bdc0de4aa3','50000','готов', '556d4c09-2ef0-4a59-b04f-aef4af78232f');
 
-insert into store.st_payment(id, orgn_shop,kpp_shop,inn_shop,payment_account_shop,orgn_client,kpp_client,
-inn_client, payment_account_client, key, amount, callback_url, status , supplier_order_id, client_order_id) values
+insert into store.st_payment(id, ogrn_shop,kpp_shop,inn_shop,payment_account_shop,ogrn_client,kpp_client,
+                             inn_client, payment_account_client, key, amount, callback_url, status , supplier_order_id, client_order_id) values
 ('e372a36c-c06a-4fcb-a476-91bae0e1c22a','1','2', '3', '4','5','6', '7','8',
-'b2d09b73eb5ad0228f9cb2e51485a45f',100000,'http://car.ru','не оплачен','10b8ebfb-c439-4fd8-a1b3-663734511975',NULL),
+ 'b2d09b73eb5ad0228f9cb2e51485a45f',100000,'http://car.ru','не оплачен','10b8ebfb-c439-4fd8-a1b3-663734511975',NULL),
 ('556d4c09-2ef0-4a59-b04f-aef4af78232f','10','20', '30', '40','50','60', '70','80',
-'556d4c09-2ef0-4a59-b04f-aef4af78232f',50000,'http://car.ru','оплачен',NULL,'556d8eee-7e64-4c10-929a-56bdc0de4aa3');
+ '556d4c09-2ef0-4a59-b04f-aef4af78232f',50000,'http://car.ru','оплачен',NULL,'556d8eee-7e64-4c10-929a-56bdc0de4aa3');
 
 insert into store.st_supplier_order_items(id, product_id, order_id, quantity) values
 ('3f0798e2-44a2-442d-9161-b4c5ad0ae28b', 'e1712476-8127-11ea-a5f1-001e101f0000','10b8ebfb-c439-4fd8-a1b3-663734511975',10),

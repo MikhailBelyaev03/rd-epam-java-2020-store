@@ -233,7 +233,7 @@
     </changeSet>
 
     <!-- Create table st_payment -->
-    <changeSet id="2020-04-25-create-table-st_payment" author="Belousov">
+    <changeSet id="2020-04-26-create-table-st_payment" author="Belousov">
         <createTable
                 schemaName="${schema_name}"
                 tableName="${prefix}payment">
@@ -291,11 +291,11 @@
             </column>
             
             <column name="supplier_order_id" type="uuid">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             
             <column name="client_order_id" type="uuid">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
         </createTable>
 
