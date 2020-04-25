@@ -27,8 +27,7 @@
         <lombok.version>1.18.12</lombok.version>
         <slf4j.version>1.2.3</slf4j.version>
 
-        <liquibase.core.version>3.8.9</liquibase.core.version>
-        <liquibase.maven.plugin.version>3.8.9</liquibase.maven.plugin.version>
+        <liquibase.version>3.8.9</liquibase.version>
         <postgresql.version>42.2.12.jre7</postgresql.version>
     </properties>
 
@@ -85,14 +84,14 @@
             <dependency>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-core</artifactId>
-                <version>${liquibase.core.version}</version>
+                <version>${liquibase.version}</version>
             </dependency>
 
             <!-- liquibase maven plugin -->
             <dependency>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
-                <version>${liquibase.maven.plugin.version}</version>
+                <version>${liquibase.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

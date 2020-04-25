@@ -28,6 +28,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}product"/>
+        </rollback>
     </changeSet>
 
     <!-- Create table st_catalog -->
@@ -48,6 +52,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}catalog"/>
+        </rollback>
     </changeSet>
     
     <!-- Add foreign key on st_catalog table to st_product -->
@@ -84,6 +92,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}client_order"/>
+        </rollback>
     </changeSet>
 
     <!-- Create table st_client_order_items -->
@@ -108,6 +120,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}client_order_items"/>
+        </rollback>
     </changeSet>
 
     <!-- Add foreign key on st_client_order_items table to st_product -->
@@ -159,6 +175,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}supplier_order"/>
+        </rollback>
     </changeSet>
 
     <!-- Create table st_supplier_order_items -->
@@ -183,6 +203,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}supplier_order_items"/>
+        </rollback>
     </changeSet>
 
     <!-- Add foreign key on st_supplier_order_items table to st_product -->
@@ -218,7 +242,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             
-            <column name="orgn_shop" type="varchar(13)">
+            <column name="ogrn_shop" type="varchar(13)">
                 <constraints nullable="false"/>
             </column>
 
@@ -234,7 +258,7 @@
                 <constraints nullable="false"/>
             </column>
             
-            <column name="orgn_client" type="varchar(13)">
+            <column name="ogrn_client" type="varchar(13)">
                 <constraints nullable="false"/>
             </column>
 
@@ -274,6 +298,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <rollback>
+            <dropTable schemaName="${schema_name}" tableName="${prefix}payment"/>
+        </rollback>
     </changeSet>
 
     <!-- Add foreign key on st_payment table to st_supplier_order -->
