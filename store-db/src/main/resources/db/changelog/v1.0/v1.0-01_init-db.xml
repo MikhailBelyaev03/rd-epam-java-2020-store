@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+      http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
+
+    <changeSet id="2020-04-25-create-table-product" author="Yurchenko_Dmitriy">
+        <createTable tableName="${prefix}product">
+            <column name="id" type="UUID"/>
+            <column name="name" type="varchar"/>
+            <column name="description" type="text"/>
+            <column name="external_product_id" type="UUID"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="${prefix}product"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-25-add-product_keys" author="Yurchenko_Dmitriy">
+        <addPrimaryKey tableName="${prefix}product" columnNames="id"/>
+    </changeSet>
+
+    <changeSet id="2020-04-25-create-table-catalog" author="Yurchenko_Dmitriy">
+        <createTable tableName="${prefix}catalog">
+            <column name="id" type="UUID"/>
+            <column name="product_id" type="UUID"/>
+            <column name="name" type="varchar"/>
+            <column name="quantity" type="int8"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="${prefix}catalog"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-25-add-catalog_keys" author="Yurchenko_Dmitriy">
+        <addPrimaryKey tableName="${prefix}catalog" columnNames="id"/>
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="${prefix}catalog"
+                                 constraintName="catalog_to_products"
+                                 referencedColumnNames="id" referencedTableName="${prefix}product"/>
+    </changeSet>
+
+    <changeSet id="2020-04-25-create-table-supplier_order" author="Yurchenko_Dmitriy">
+        <createTable tableName="${prefix}supplier_order">
+            <column name="id" type="UUID"/>
+            <column name="amount" type="int8"/>
+            <column name="status" type="varchar"/>
+            <column name="payment_callback_url" type="varchar"/>
+            <column name="payment_id" type="UUID"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="${prefix}supplier_order"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-25-add-suppler_order_keys" author="Yurchenko_Dmitriy">
+        <addPrimaryKey tableName="${prefix}supplier_order" columnNames="id"/>
+    </changeSet>
+
+    <changeSet id="2020-04-25-create-table-supplier_order_items" author="Yurchenko_Dmitriy">
+        <createTable tableName="${prefix}supplier_order_items">
+            <column name="id" type="UUID"/>
+            <column name="product_id" type="UUID"/>
+            <column name="order_id" type="UUID"/>
+            <column name="quantity" type="int8"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="${prefix}supplier_order_items"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-25-add-supplier_order_items_keys" author="Yurchenko_Dmitriy">
+        <addPrimaryKey tableName="${prefix}supplier_order_items" columnNames="id"/>
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="${prefix}supplier_order_items"
+                                 constraintName="supplier_order_items_keys"
+                                 referencedColumnNames="id" referencedTableName="${prefix}product"/>
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="${prefix}supplier_order_items"
+                                 constraintName="product_keys"
+                                 referencedColumnNames="id" referencedTableName="${prefix}supplier_order"/>
+    </changeSet>
+
+    <changeSet id="2020-04-25-create-table-client_order" author="Yurchenko_Dmitriy">
+        <createTable tableName="${prefix}client_order">
+            <column name="id" type="UUID"/>
+            <column name="amount" type="int8"/>
+            <column name="status" type="varchar"/>
+            <column name="payment_id" type="UUID"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="${prefix}client_order"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-25-add-client_order_keys" author="Yurchenko_Dmitriy">
+        <addPrimaryKey tableName="${prefix}client_order" columnNames="id"/>
+    </changeSet>
+
+    <changeSet id="2020-04-25-create-table-client_order_items" author="Yurchenko_Dmitriy">
+        <createTable tableName="${prefix}client_order_items">
+            <column name="id" type="UUID"/>
+            <column name="product_id" type="UUID"/>
+            <column name="order_id" type="UUID"/>
+            <column name="quantity" type="int8"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="${prefix}client_order_items"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-25-add-client_order_items_keys" author="Yurchenko_Dmitriy">
+        <addPrimaryKey tableName="${prefix}client_order_items" columnNames="id"/>
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="${prefix}client_order_items"
+                                 constraintName="product_for_keys"
+                                 referencedColumnNames="id" referencedTableName="${prefix}product"/>
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="${prefix}client_order_items"
+                                 constraintName="client_order_for_keys"
+                                 referencedColumnNames="id" referencedTableName="${prefix}client_order"/>
+    </changeSet>
+
+    <changeSet id="2020-04-24-create-table-payment" author="Yurchenko_Dmitriy">
+        <createTable tableName="${prefix}payment">
+            <column name="id" type="UUID"/>
+            <column name="ogrn_shop" type="varchar"/>
+            <column name="kpp_shop" type="varchar"/>
+            <column name="inn_shop" type="varchar"/>
+            <column name="payment_account_shop" type="varchar"/>
+            <column name="ogrn_client" type="varchar"/>
+            <column name="kpp_client" type="varchar"/>
+            <column name="inn_client" type="varchar"/>
+            <column name="payment_account_client" type="varchar"/>
+            <column name="key" type="varchar"/>
+            <column name="amount" type="int8"/>
+            <column name="callback_url" type="varchar"/>
+            <column name="status" type="varchar"/>
+            <column name="supplier_order_id" type="UUID"/>
+            <column name="client_order_id" type="UUID"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="${prefix}payment"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2020-04-25-add-payment_keys" author="Yurchenko_Dmitriy">
+        <addPrimaryKey tableName="${prefix}payment" columnNames="id"/>
+        <addForeignKeyConstraint baseColumnNames="supplier_order_id" baseTableName="${prefix}payment"
+                                 constraintName="supplier_order_keys"
+                                 referencedColumnNames="id" referencedTableName="${prefix}supplier_order"/>
+        <addForeignKeyConstraint baseColumnNames="client_order_id" baseTableName="${prefix}payment"
+                                 constraintName="client_order_keys"
+                                 referencedColumnNames="id" referencedTableName="${prefix}client_order"/>
+    </changeSet>
+
+</databaseChangeLog>
