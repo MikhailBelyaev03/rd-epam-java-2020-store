@@ -38,6 +38,12 @@
     <logger name="com.epam.rd.repository.SupplierOrderItemRepository" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
+    <logger name="com.epam.rd.repository.ClientOrderRepository" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="com.epam.rd.repository.ClientOrderItemRepository" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
 
     <root level="debug">
         <appender-ref ref="CONSOLE"/>
