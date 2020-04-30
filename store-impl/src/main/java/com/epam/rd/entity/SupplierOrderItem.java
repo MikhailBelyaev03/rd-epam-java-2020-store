@@ -1,8 +1,7 @@
 package com.epam.rd.entity;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -11,9 +10,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "supplier_order_items")
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class SupplierOrderItem {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -22,7 +21,7 @@ public class SupplierOrderItem {
     )
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;
 
@@ -31,14 +30,4 @@ public class SupplierOrderItem {
     private SupplierOrder supplierOrder;
 
     private long quantity;
-
-    @Override
-    public String toString() {
-        return "SupplierOrderItem{" +
-                "id=" + id +
-                ", product=" + product +
-                ", supplierOrder=" + supplierOrder +
-                ", quantity=" + quantity +
-                '}';
-    }
 }
