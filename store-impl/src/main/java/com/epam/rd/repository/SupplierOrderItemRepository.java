@@ -11,13 +11,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * @author Belousov Anton
+ * @{code SupplierOrderItemRepository} describe work with table st_supplier_order_item on DB.
+ */
 @Slf4j
 public class SupplierOrderItemRepository implements CrudRepository<SupplierOrderItem> {
     private final EntityManager entityManager = Persistence
             .createEntityManagerFactory("store-pu")
             .createEntityManager();
 
-
+    /**
+     * This method find record by ID.
+     *
+     * @param id - input ID for searching concrete record of SupplierOrderItem
+     * @return optional of SupplierOrderItem
+     */
     @Override
     public Optional<SupplierOrderItem> findById(UUID id) {
         try {
@@ -29,6 +38,11 @@ public class SupplierOrderItemRepository implements CrudRepository<SupplierOrder
         return Optional.empty();
     }
 
+    /**
+     * This method show all records.
+     *
+     * @return list objects of SupplierOrderItems
+     */
     @Override
     public List<SupplierOrderItem> findAll() {
         try {
@@ -40,6 +54,11 @@ public class SupplierOrderItemRepository implements CrudRepository<SupplierOrder
         return Collections.emptyList();
     }
 
+    /**
+     * This method save new record or update exists record.
+     *
+     * @param object - input object of SupplierOrderItem for save or update concrete record
+     */
     @Override
     public void save(SupplierOrderItem object) {
         try {
@@ -57,6 +76,11 @@ public class SupplierOrderItemRepository implements CrudRepository<SupplierOrder
         }
     }
 
+    /**
+     * This method delete concrete record if exists.
+     *
+     * @param object - input object of SupplierOrderItems for delete
+     */
     @Override
     public void delete(SupplierOrderItem object) {
         try {
@@ -70,6 +94,12 @@ public class SupplierOrderItemRepository implements CrudRepository<SupplierOrder
         }
     }
 
+    /**
+     * This method check for existence record with concrete ID
+     *
+     * @param id - input ID check concrete record of SupplierOrderItems
+     * @return - {@code true} if exists record with concrete ID otherwise {@code false}
+     */
     @Override
     public boolean existsById(UUID id) {
         try {

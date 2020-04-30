@@ -11,12 +11,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * @author Belousov Anton
+ * @{code SupplierOrderRepository} describe work with table st_supplier_order on DB.
+ */
 @Slf4j
 public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
     private final EntityManager entityManager = Persistence
             .createEntityManagerFactory("store-pu")
             .createEntityManager();
 
+    /**
+     * This method find record by ID.
+     *
+     * @param id - input ID for searching concrete record of SupplierOrder
+     * @return optional of SupplierOrder
+     */
     @Override
     public Optional<SupplierOrder> findById(UUID id) {
         try {
@@ -28,6 +38,11 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
         return Optional.empty();
     }
 
+    /**
+     * This method show all records.
+     *
+     * @return list objects of SupplierOrder
+     */
     @Override
     public List<SupplierOrder> findAll() {
         try {
@@ -39,6 +54,11 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
         return Collections.emptyList();
     }
 
+    /**
+     * This method save new record or update exists record.
+     *
+     * @param object - input object of SupplierOrder for save or update concrete record
+     */
     @Override
     public void save(SupplierOrder object) {
         try {
@@ -57,6 +77,11 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
 
     }
 
+    /**
+     * This method delete concrete record if exists.
+     *
+     * @param object - input object of SupplierOrder for delete
+     */
     @Override
     public void delete(SupplierOrder object) {
         try {
@@ -70,6 +95,12 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
         }
     }
 
+    /**
+     * This method checks for existence record with concrete ID
+     *
+     * @param id - input ID check concrete record of SupplierOrder
+     * @return - {@code true} if exist record with concrete ID otherwise {@code false}
+     */
     @Override
     public boolean existsById(UUID id) {
         try {

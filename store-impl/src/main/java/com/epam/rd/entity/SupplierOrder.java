@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * {@code SupplierOrder} describe table st_supplier_order in DB
+ *
+ * @author Belousov Anton
+ */
 @Entity
 @Table(name = "st_supplier_order")
 @NoArgsConstructor

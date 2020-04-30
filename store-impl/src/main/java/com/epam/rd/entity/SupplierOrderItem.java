@@ -7,8 +7,13 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.UUID;
 
+/**
+ * {@code SupplierOrderItem} describe table st_supplier_order_items in DB
+ *
+ * @author Belousov Anton
+ */
 @Entity
-@Table(name = "supplier_order_items")
+@Table(name = "st_supplier_order_items")
 @NoArgsConstructor
 @Data
 public class SupplierOrderItem {
