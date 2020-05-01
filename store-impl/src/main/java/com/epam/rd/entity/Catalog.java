@@ -5,12 +5,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
 import javax.persistence.OneToOne;
-import javax.persistence.JoinColumn;
 import javax.persistence.CascadeType;
+import javax.persistence.JoinColumn;
 import java.util.UUID;
 
 @Data

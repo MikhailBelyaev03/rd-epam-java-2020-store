@@ -4,7 +4,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
+import javax.persistence.OneToMany;
+import javax.persistence.FetchType;
+import javax.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,9 +38,11 @@ public class SupplierOrder {
 
     private String status;
 
-    private String payment_callback_url;
+    @Column(name = "payment_callback_url")
+    private String paymentCallbackUrl;
 
-    private UUID payment_id;
+    @Column(name = "payment_id")
+    private UUID paymentId;
 
     @OneToMany(mappedBy = "supplierOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<SupplierOrderItem> supplierOrderItem = new ArrayList<>();
