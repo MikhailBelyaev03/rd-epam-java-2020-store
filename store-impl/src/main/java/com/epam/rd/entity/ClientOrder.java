@@ -4,13 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.FetchType;
-import javax.persistence.CascadeType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +25,8 @@ public class ClientOrder {
 
     private String status;
 
-    private UUID payment_id;
+    @Column(name = "payment_id")
+    private UUID paymentId;
 
     @OneToMany(mappedBy = "clientOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<ClientOrderItem> clientOrderItem;

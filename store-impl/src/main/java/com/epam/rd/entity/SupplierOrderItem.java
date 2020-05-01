@@ -26,10 +26,12 @@ public class SupplierOrderItem {
     )
     private UUID id;
 
+    @Column(name = "product_id")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Column(name = "order_id")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private SupplierOrder supplierOrder;

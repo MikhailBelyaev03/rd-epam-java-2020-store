@@ -31,9 +31,11 @@ public class SupplierOrder {
 
     private String status;
 
-    private String payment_callback_url;
+    @Column(name = "payment_callback_url")
+    private String paymentCallbackUrl;
 
-    private UUID payment_id;
+    @Column(name = "payment_id")
+    private UUID paymentId;
 
     @OneToMany(mappedBy = "supplierOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<SupplierOrderItem> supplierOrderItem = new ArrayList<>();
