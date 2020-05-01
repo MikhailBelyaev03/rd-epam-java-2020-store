@@ -27,7 +27,6 @@
         <createTable tableName="${prefix}catalog">
             <column name="id" type="UUID"/>
             <column name="product_id" type="UUID"/>
-            <column name="name" type="varchar"/>
             <column name="quantity" type="int8"/>
         </createTable>
         <rollback>
