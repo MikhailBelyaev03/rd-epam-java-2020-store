@@ -20,7 +20,6 @@ public class Catalog {
             strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @Column(name = "product_id")
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Product product;
