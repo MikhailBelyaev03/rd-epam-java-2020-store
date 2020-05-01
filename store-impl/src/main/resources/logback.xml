@@ -32,7 +32,10 @@
     </logger>
 
     <!-- Логгер для консоли-->
-    <logger name="com.epam.rd.Application" level="info" additivity="false">
+    <logger name="com.epam.rd.repository.SupplierOrderRepository" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="com.epam.rd.repository.SupplierOrderItemRepository" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
 
