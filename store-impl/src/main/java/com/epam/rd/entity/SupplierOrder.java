@@ -45,5 +45,5 @@ public class SupplierOrder {
     private UUID paymentId;
 
     @OneToMany(mappedBy = "supplierOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<SupplierOrderItem> supplierOrderItem = new ArrayList<>();
+    private List<SupplierOrderItem> supplierOrderItems = new ArrayList<>();
 }

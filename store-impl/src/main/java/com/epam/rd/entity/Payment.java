@@ -9,14 +9,10 @@ import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Column;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.FetchType;
-import javax.persistence.CascadeType;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @Entity
@@ -63,15 +59,11 @@ public class Payment {
 
     private String status;
 
-    @Column(name = "supplier_order_id")
-    private UUID supplierOrderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_order_id")
+    private SupplierOrder supplierOrder;
 
-    @Column(name = "client_order_id")
-    private UUID clientOrderId;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "payment")
-    private List<SupplierOrder> supplierOrders = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "payment")
-    private List<ClientOrder> clientOrders = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_order_id")
+    private ClientOrder clientOrder;
 }
