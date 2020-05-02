@@ -12,7 +12,8 @@ import javax.persistence.Column;
 import javax.persistence.OneToMany;
 import javax.persistence.FetchType;
 import javax.persistence.CascadeType;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -36,6 +37,6 @@ public class ClientOrder {
     private UUID paymentId;
 
     @OneToMany(mappedBy = "clientOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<ClientOrderItem> clientOrderItem;
+    private List<ClientOrderItem> clientOrderItems = new ArrayList<>();
 
 }
