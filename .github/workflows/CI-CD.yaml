@@ -1,0 +1,49 @@
+name: Java CI/CD build
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ 11 ]
+    name: Java ${{ matrix.java }} build compile
+    steps:
+      - uses: actions/checkout@master
+      - name: Clean and compile
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - run: mvn -f pom.xml clean compile
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ 11 ]
+    name: Java ${{ matrix.java }} test
+    steps:
+      - uses: actions/checkout@v1
+      - name: Test
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - run: mvn -f pom.xml test
+  test-coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ 11 ]
+    name: Java ${{ matrix.java }} test coverage
+    steps:
+      - uses: actions/checkout@v1
+      - name: Verify
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - run: mvn -f pom.xml verify -Ptest-coverage -fae
