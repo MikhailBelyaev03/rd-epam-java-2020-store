@@ -1,33 +1,36 @@
 package com.epam.rd.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Column;
-import javax.persistence.OneToOne;
-import javax.persistence.FetchType;
-import javax.persistence.CascadeType;
-import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
 
 @Data
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(exclude = {"clientOrderItems", "supplierOrderItems"})
+@ToString(exclude = {"clientOrderItems", "supplierOrderItems"})
 @Table(name = "st_product")
 public class Product {
 
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator")
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
     private String name;

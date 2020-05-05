@@ -1,17 +1,18 @@
 package com.epam.rd.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.ManyToOne;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import java.util.UUID;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
 
 /**
  * {@code SupplierOrderItem} describe table st_supplier_order_items in DB
@@ -20,6 +21,8 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "st_supplier_order_items")
+@ToString(exclude = "supplierOrder")
+@EqualsAndHashCode(exclude = "supplierOrder")
 @NoArgsConstructor
 @Data
 public class SupplierOrderItem {
@@ -27,8 +30,8 @@ public class SupplierOrderItem {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator"
     )
     private UUID id;
 
