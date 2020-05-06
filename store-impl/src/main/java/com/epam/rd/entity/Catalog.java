@@ -34,4 +34,6 @@ public class Catalog {
     private Product product;
 
     private int quantity;
+
+    private double price;
 }
