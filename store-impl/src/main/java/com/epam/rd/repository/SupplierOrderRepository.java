@@ -111,4 +111,20 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
         }
         return false;
     }
+
+    /**
+     * This method find record by payment ID
+     *
+     * @param paymentId - entry payment ID
+     * @return optional of SupplierOrder
+     */
+    public Optional<SupplierOrder> findByPaymentId(UUID paymentId) {
+        try {
+            log.info("findByPaymentID - find supplier order with payment id= {}", paymentId);
+            return Optional.ofNullable(entityManager.find(SupplierOrder.class, paymentId));
+        } catch (PersistenceException e) {
+            log.warn("Error during searching by payment id");
+        }
+        return Optional.empty();
+    }
 }
