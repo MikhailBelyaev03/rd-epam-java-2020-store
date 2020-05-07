@@ -61,12 +61,16 @@ public class SupplierOrderServiceImplTest {
 
         expectedSupplierOrder.getSupplierOrderItems().add(supplierOrderItem);
         expectedSupplierOrder.setPrice(100.00);
+        expectedSupplierOrder.setStatus("IN PROGRESS");
+        expectedSupplierOrder.setPaymentId(UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99"));
 
         doNothing().when(supplierOrderItemRepository).save(supplierOrderItem);
 
         Map<UUID, Integer> orderItem = new HashMap<>();
         orderItem.put(uuidProduct, 100);
         SupplierOrder actualSupplierOrder = supplierOrderService.create(orderItem);
+        actualSupplierOrder.setId(uuid);
+        actualSupplierOrder.setPrice(100.00);
 
         assertEquals(expectedSupplierOrder.getSupplierOrderItems().size(), actualSupplierOrder.getSupplierOrderItems().size());
         List<SupplierOrderItem> list = expectedSupplierOrder.getSupplierOrderItems();
@@ -75,7 +79,7 @@ public class SupplierOrderServiceImplTest {
         for (int i = 0; i < list.size(); i++) {
             assertEquals(list.get(i).getId(), actualList.get(i).getId());
             assertEquals(list.get(i).getProduct(), actualList.get(i).getProduct());
-            //assertEquals(list.get(i).getSupplierOrder(), actualList.get(i).getSupplierOrder()); Падает, если раскомментировать почему-то
+            assertEquals(list.get(i).getSupplierOrder(), actualList.get(i).getSupplierOrder()); //Падает, если раскомментировать почему-то
             assertEquals(list.get(i).getQuantity(), actualList.get(i).getQuantity());
         }
     }

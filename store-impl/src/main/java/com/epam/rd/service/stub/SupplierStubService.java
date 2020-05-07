@@ -4,7 +4,8 @@ import java.util.UUID;
 
 /**
  * @author Belousov Anton
- * @{code SupplierStubService} always return immutable UUID. This class use like stub for call Supplier microservice
+ * @{code SupplierStubService} always return immutable UUID for field paymentId.
+ * This class use like stub for call Supplier microservice
  */
 public class SupplierStubService {
 
