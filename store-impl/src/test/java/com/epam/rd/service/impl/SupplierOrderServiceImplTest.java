@@ -79,7 +79,7 @@ public class SupplierOrderServiceImplTest {
         for (int i = 0; i < list.size(); i++) {
             assertEquals(list.get(i).getId(), actualList.get(i).getId());
             assertEquals(list.get(i).getProduct(), actualList.get(i).getProduct());
-            assertEquals(list.get(i).getSupplierOrder(), actualList.get(i).getSupplierOrder()); //Падает, если раскомментировать почему-то
+            assertEquals(list.get(i).getSupplierOrder(), actualList.get(i).getSupplierOrder());
             assertEquals(list.get(i).getQuantity(), actualList.get(i).getQuantity());
         }
     }
