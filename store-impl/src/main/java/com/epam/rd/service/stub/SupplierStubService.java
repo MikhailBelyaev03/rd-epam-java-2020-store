@@ -10,7 +10,7 @@ import java.util.UUID;
 public class SupplierStubService {
 
     /**
-     * Give static UUID
+     * Give static UUID for paymentId
      *
      * @return immutable UUID
      */

@@ -1,5 +1,6 @@
 package com.epam.rd.service.impl;
 
+import com.epam.rd.entity.Catalog;
 import com.epam.rd.entity.Product;
 import com.epam.rd.entity.SupplierOrder;
 import com.epam.rd.entity.SupplierOrderItem;
@@ -32,27 +33,29 @@ import static org.mockito.Mockito.verify;
 public class SupplierOrderServiceImplTest {
 
     @Mock
-    private SupplierOrderRepository supplierOrderRepository;
+    private SupplierOrderRepository supplierOrderRepository = new SupplierOrderRepository();
 
     @Mock
-    private SupplierOrderItemRepository supplierOrderItemRepository;
+    private SupplierOrderItemRepository supplierOrderItemRepository = new SupplierOrderItemRepository();
 
     @Mock
-    private ProductRepository productRepository;
+    private ProductRepository productRepository = new ProductRepository();
 
     @InjectMocks
     private SupplierOrderServiceImpl supplierOrderService = new SupplierOrderServiceImpl();
 
     @Test
     public void createTest() {
-        UUID uuid = UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99");
+        //UUID uuid = UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99");
         SupplierOrder expectedSupplierOrder = new SupplierOrder();
-        expectedSupplierOrder.setId(uuid);
 
         UUID uuidProduct = UUID.fromString("0afd3797-f753-4aed-94a1-0c7a0a053d21");
+        Catalog catalog = new Catalog();
+        catalog.setPrice(1);
+        catalog.setQuantity(11);
         Product product = new Product();
         product.setId(uuidProduct);
-        when(productRepository.findById(uuidProduct)).thenReturn(Optional.ofNullable(product));
+        product.setCatalog(catalog);
 
         SupplierOrderItem supplierOrderItem = new SupplierOrderItem();
         supplierOrderItem.setProduct(product);
@@ -60,28 +63,21 @@ public class SupplierOrderServiceImplTest {
         supplierOrderItem.setQuantity(100);
 
         expectedSupplierOrder.getSupplierOrderItems().add(supplierOrderItem);
-        expectedSupplierOrder.setPrice(100.00);
+        expectedSupplierOrder.setPrice(1.0);
         expectedSupplierOrder.setStatus("IN PROGRESS");
         expectedSupplierOrder.setPaymentId(UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99"));
 
-        doNothing().when(supplierOrderItemRepository).save(supplierOrderItem);
-
         Map<UUID, Integer> orderItem = new HashMap<>();
         orderItem.put(uuidProduct, 100);
+
+
+        when(productRepository.findById(uuidProduct)).thenReturn(Optional.ofNullable(product));
+
         SupplierOrder actualSupplierOrder = supplierOrderService.create(orderItem);
-        actualSupplierOrder.setId(uuid);
-        actualSupplierOrder.setPrice(100.00);
 
-        assertEquals(expectedSupplierOrder.getSupplierOrderItems().size(), actualSupplierOrder.getSupplierOrderItems().size());
-        List<SupplierOrderItem> list = expectedSupplierOrder.getSupplierOrderItems();
-        List<SupplierOrderItem> actualList = actualSupplierOrder.getSupplierOrderItems();
+        doNothing().when(supplierOrderItemRepository).save(supplierOrderItem);
 
-        for (int i = 0; i < list.size(); i++) {
-            assertEquals(list.get(i).getId(), actualList.get(i).getId());
-            assertEquals(list.get(i).getProduct(), actualList.get(i).getProduct());
-            assertEquals(list.get(i).getSupplierOrder(), actualList.get(i).getSupplierOrder());
-            assertEquals(list.get(i).getQuantity(), actualList.get(i).getQuantity());
-        }
+        assertEquals(expectedSupplierOrder, actualSupplierOrder);
     }
 
     @Test
@@ -92,7 +88,7 @@ public class SupplierOrderServiceImplTest {
 
         when(supplierOrderRepository.findById(uuid)).thenReturn(Optional.ofNullable(supplierOrder));
         supplierOrderService.markAsDelivered(uuid);
-        verify(supplierOrderRepository).findById(uuid);
+        verify(supplierOrderRepository).save(supplierOrder);
 
         assertEquals(supplierOrder.getStatus(), "DELIVERED");
     }
@@ -105,7 +101,6 @@ public class SupplierOrderServiceImplTest {
 
         when(supplierOrderRepository.findByPaymentId(uuid)).thenReturn(Optional.ofNullable(supplierOrder));
         SupplierOrder actual = supplierOrderService.checkOrderByPaymentId(uuid);
-        verify(supplierOrderRepository).findByPaymentId(uuid);
 
         assertEquals(actual.getId(), supplierOrder.getId());
     }

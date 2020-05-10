@@ -121,9 +121,13 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
     public Optional<SupplierOrder> findByPaymentId(UUID paymentId) {
         try {
             log.info("findByPaymentID - find supplier order with payment id= {}", paymentId);
-            return Optional.ofNullable(entityManager.find(SupplierOrder.class, paymentId));
+            Optional<SupplierOrder> supplierOrdersOptional = findAll()
+                    .stream()
+                    .filter(supplierOrder -> supplierOrder.getPaymentId().equals(paymentId))
+                    .findFirst();
+            return supplierOrdersOptional;
         } catch (PersistenceException e) {
-            log.warn("Error during searching by payment id");
+            log.warn("Error during searching by payment id = {}", paymentId);
         }
         return Optional.empty();
     }
