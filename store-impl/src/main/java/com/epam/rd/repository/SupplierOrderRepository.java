@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,9 @@ import java.util.UUID;
  */
 @Slf4j
 public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
+
+    private static final String SELECT_PAYMENT_ID_FROM_SUPPLIER_ORDER = "select payment_id from st_supplier_order where st_supplier_order.payment_id = paymentId";
+
     private final EntityManager entityManager = Persistence
             .createEntityManagerFactory("store-pu")
             .createEntityManager();
@@ -116,15 +120,13 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
      * This method find record by payment ID
      *
      * @param paymentId - entry payment ID
-     * @return optional of SupplierOrder
+     * @return Object or optional of SupplierOrder
      */
-    public Optional<SupplierOrder> findByPaymentId(UUID paymentId) {
+    public Object findByPaymentId(UUID paymentId) {
         try {
             log.info("findByPaymentID - find supplier order with payment id= {}", paymentId);
-            Optional<SupplierOrder> supplierOrdersOptional = findAll()
-                    .stream()
-                    .filter(supplierOrder -> supplierOrder.getPaymentId().equals(paymentId))
-                    .findFirst();
+            TypedQuery<SupplierOrder> supplierOrdersOptional = entityManager
+                    .createQuery(SELECT_PAYMENT_ID_FROM_SUPPLIER_ORDER, SupplierOrder.class);
             return supplierOrdersOptional;
         } catch (PersistenceException e) {
             log.warn("Error during searching by payment id = {}", paymentId);

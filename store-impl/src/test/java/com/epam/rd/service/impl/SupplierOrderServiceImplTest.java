@@ -62,7 +62,7 @@ public class SupplierOrderServiceImplTest {
         supplierOrderItem.setQuantity(100);
 
         expectedSupplierOrder.getSupplierOrderItems().add(supplierOrderItem);
-        expectedSupplierOrder.setPrice(1.0);
+        expectedSupplierOrder.setPrice(100.0);
         expectedSupplierOrder.setStatus("IN PROGRESS");
         expectedSupplierOrder.setPaymentId(UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99"));
 
