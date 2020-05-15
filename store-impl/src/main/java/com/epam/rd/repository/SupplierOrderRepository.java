@@ -19,7 +19,7 @@ import java.util.UUID;
 @Slf4j
 public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
 
-    private static final String SELECT_PAYMENT_ID_FROM_SUPPLIER_ORDER = "select payment_id from st_supplier_order where st_supplier_order.payment_id = paymentId";
+    private static final String FIND_BY_PAYMENT_ID = "select * from st_supplier_order where payment_id = : paymentId";
 
     private final EntityManager entityManager = Persistence
             .createEntityManagerFactory("store-pu")
@@ -122,11 +122,11 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
      * @param paymentId - entry payment ID
      * @return Object or optional of SupplierOrder
      */
-    public Object findByPaymentId(UUID paymentId) {
+    public Optional<SupplierOrder> findByPaymentId(UUID paymentId) {
         try {
             log.info("findByPaymentID - find supplier order with payment id= {}", paymentId);
-            TypedQuery<SupplierOrder> supplierOrdersOptional = entityManager
-                    .createQuery(SELECT_PAYMENT_ID_FROM_SUPPLIER_ORDER, SupplierOrder.class);
+            Optional<SupplierOrder> supplierOrdersOptional = Optional.ofNullable(entityManager
+                    .createQuery(FIND_BY_PAYMENT_ID, SupplierOrder.class).getSingleResult());
             return supplierOrdersOptional;
         } catch (PersistenceException e) {
             log.warn("Error during searching by payment id = {}", paymentId);

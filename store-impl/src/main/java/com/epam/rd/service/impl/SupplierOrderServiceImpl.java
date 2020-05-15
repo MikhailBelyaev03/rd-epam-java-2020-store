@@ -49,42 +49,42 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
         SupplierOrder supplierOrder = new SupplierOrder();
         supplierOrder.setStatus(SUPPLIER_ORDER_STATUS_IN_PROGRESS);
         supplierOrder.setPaymentCallbackUrl(SUPPLIER_ORDER_PAYMENT_CALLBACK_URL);
-        SupplierOrderItem supplierOrderItem = new SupplierOrderItem();
         List<SupplierOrderItem> supplierOrderItemList = new ArrayList<>();
         Optional<Product> product = Optional.of(new Product());
 
         for (UUID productId : keys) {
-            try {
-                product = productRepository.findById(productId);
-                if (product.isPresent()) {
-                    supplierOrderItem.setProduct(product.get());
-                    supplierOrderItem.setSupplierOrder(supplierOrder);
-                    supplierOrderItem.setQuantity(orderItems.get(productId));
+            product = Optional.ofNullable(productRepository.findById(productId).orElseThrow(() -> {
+                log.warn("Product with id = {} not exists", productId);
+                return new RuntimeException("Product is not exists, learn more in logs/debug.log");
+            }));
 
-                    supplierOrder.getSupplierOrderItems().add(supplierOrderItem);
-                    supplierOrderItemList = supplierOrder.getSupplierOrderItems();
-                }
-            } catch (RuntimeException e) {
-                log.warn("Product with id = {} not exists. Error: {}", productId, e.getMessage());
-            }
+            SupplierOrderItem supplierOrderItem = new SupplierOrderItem();
+            supplierOrderItem.setProduct(product.get());
+            supplierOrderItem.setSupplierOrder(supplierOrder);
+            supplierOrderItem.setQuantity(orderItems.get(productId));
+
+            supplierOrder.getSupplierOrderItems().add(supplierOrderItem);
+
+            supplierOrderItemList = supplierOrder.getSupplierOrderItems();
         }
 
-        try {
             if (supplierOrder.getSupplierOrderItems().isEmpty()) {
                 log.info("Supplier order has not items");
+                throw new RuntimeException("Supplier order items is empty");
             }
-        } catch (RuntimeException e) {
-            log.warn(e.getMessage());
-        }
 
         supplierOrder.setSupplierOrderItems(supplierOrderItemList);
 
         if (product.isPresent()) {
             Catalog catalog = product.get().getCatalog();
-            Long supplierOrderItemQuantity = supplierOrderItem.getQuantity();
+            Long supplierOrderItemQuantity;
+            Double price = 0.0;
 
-            Double price = calculatePrice(catalog, supplierOrderItemQuantity);
-            supplierOrder.setPrice(price);
+            for (SupplierOrderItem supplierOrderItem : supplierOrderItemList) {
+                supplierOrderItemQuantity = supplierOrderItem.getQuantity();
+                price += calculatePrice(catalog, supplierOrderItemQuantity);
+                supplierOrder.setPrice(price);
+            }
         }
 
         UUID paymentId = supplierStubService.send();
@@ -106,16 +106,15 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
     public void markAsDelivered(UUID supplierOrderId) {
         Optional<SupplierOrder> optionalSupplierOrder = supplierOrderRepository.findById(supplierOrderId);
 
-        try {
-            optionalSupplierOrder.orElseThrow(RuntimeException::new);
-            SupplierOrder supplierOrder = optionalSupplierOrder.get();
-            supplierOrder.setStatus(SUPPLIER_ORDER_STATUS_DELIVERED);
-            supplierOrderRepository.save(supplierOrder);
-
-            log.info("Changed the status to PAID for SupplierOrder with id = {}", supplierOrderId);
-        } catch (RuntimeException e) {
+        optionalSupplierOrder.orElseThrow(() -> {
             log.warn("Order for supplier with id = {} is not exists", supplierOrderId);
-        }
+            return new RuntimeException("Order for supplier is not exists, for info logs/debug.log");
+        });
+        SupplierOrder supplierOrder = optionalSupplierOrder.get();
+        supplierOrder.setStatus(SUPPLIER_ORDER_STATUS_DELIVERED);
+        supplierOrderRepository.save(supplierOrder);
+
+        log.info("Changed the status to PAID for SupplierOrder with id = {}", supplierOrderId);
     }
 
     /**
@@ -129,7 +128,7 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
     public SupplierOrder checkOrderByPaymentId(UUID paymentId) {
 
         try {
-            Optional<SupplierOrder> supplierOrderOptional = (Optional<SupplierOrder>) supplierOrderRepository
+            Optional<SupplierOrder> supplierOrderOptional = supplierOrderRepository
                     .findByPaymentId(paymentId);
 
             if (supplierOrderOptional.isPresent()) {
