@@ -5,11 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static java.util.Optional.ofNullable;
 import static java.util.Optional.empty;
 
@@ -21,6 +23,7 @@ import static java.util.Optional.empty;
 @Slf4j
 public class PaymentRepository implements CrudRepository<Payment> {
 
+    private static final String FIND_BY_SUPPLIER_ORDER_ID = "select * from Payment p where p.supplier_order_id = :supplierOrderId";
     private final EntityManager entityManager = Persistence.createEntityManagerFactory("store-pu").createEntityManager();
 
     /**
@@ -49,7 +52,7 @@ public class PaymentRepository implements CrudRepository<Payment> {
     public List<Payment> findAll() {
         try {
             log.info("findAll() - find all payments = {}");
-            TypedQuery<Payment> query = entityManager.createQuery("from Payment", Payment.class);
+            TypedQuery<Payment> query = entityManager.createQuery("FROM Payment", Payment.class);
             return query.getResultList();
         } catch (Exception e) {
             log.warn("Error during searching:", e);
@@ -67,16 +70,15 @@ public class PaymentRepository implements CrudRepository<Payment> {
         try {
             log.info("update() - update payment {}", payment);
             entityManager.getTransaction().begin();
-            if(payment.getId() != null){
+            if (payment.getId() != null) {
                 entityManager.merge(payment);
-            }else{
+            } else {
                 entityManager.persist(payment);
             }
             entityManager.getTransaction().commit();
         } catch (Exception e) {
             log.warn("Error during saving(updating)", e);
         }
-
     }
 
     /**
@@ -111,6 +113,18 @@ public class PaymentRepository implements CrudRepository<Payment> {
             log.warn("Error during searching by id={} ", id);
         }
         return false;
+    }
+
+
+    public Optional<Payment> findBySupplierOrderId(UUID supplierOrderId) {
+        try {
+            log.info("findByPaymentID - find supplier order with payment id= {}", supplierOrderId);
+            return ofNullable(entityManager
+                    .createQuery(FIND_BY_SUPPLIER_ORDER_ID, Payment.class).getSingleResult());
+        } catch (PersistenceException e) {
+            log.warn("Error during searching by payment id = {}", supplierOrderId);
+        }
+        return Optional.empty();
     }
 
 }
