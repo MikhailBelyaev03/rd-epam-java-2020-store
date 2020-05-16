@@ -6,11 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 
 /**
  * @author Belousov Anton
@@ -19,7 +21,7 @@ import java.util.UUID;
 @Slf4j
 public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
 
-    private static final String FIND_BY_PAYMENT_ID = "select * from st_supplier_order where payment_id = : paymentId";
+    private static final String FIND_BY_PAYMENT_ID = "select * from SupplierOrder so where so.paymentId = : paymentId";
 
     private final EntityManager entityManager = Persistence
             .createEntityManagerFactory("store-pu")
@@ -35,11 +37,11 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
     public Optional<SupplierOrder> findById(UUID id) {
         try {
             log.info("findById() - find supplier order by id= {}", id);
-            return Optional.ofNullable(entityManager.find(SupplierOrder.class, id));
+            return ofNullable(entityManager.find(SupplierOrder.class, id));
         } catch (PersistenceException e) {
             log.warn("Error during searching by id= {}", id, e);
         }
-        return Optional.empty();
+        return empty();
     }
 
     /**
@@ -125,12 +127,11 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
     public Optional<SupplierOrder> findByPaymentId(UUID paymentId) {
         try {
             log.info("findByPaymentID - find supplier order with payment id= {}", paymentId);
-            Optional<SupplierOrder> supplierOrdersOptional = Optional.ofNullable(entityManager
+            return ofNullable(entityManager
                     .createQuery(FIND_BY_PAYMENT_ID, SupplierOrder.class).getSingleResult());
-            return supplierOrdersOptional;
         } catch (PersistenceException e) {
             log.warn("Error during searching by payment id = {}", paymentId);
         }
-        return Optional.empty();
+        return empty();
     }
 }
