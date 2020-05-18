@@ -14,7 +14,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author Belousov Anton
@@ -45,45 +48,24 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
     @Override
     public SupplierOrder create(Map<UUID, Integer> orderItems) {
 
-        Set<UUID> keys = orderItems.keySet();
         SupplierOrder supplierOrder = new SupplierOrder();
         supplierOrder.setStatus(SUPPLIER_ORDER_STATUS_IN_PROGRESS);
         supplierOrder.setPaymentCallbackUrl(SUPPLIER_ORDER_PAYMENT_CALLBACK_URL);
-        List<SupplierOrderItem> supplierOrderItemList = new ArrayList<>();
 
-        for (UUID productId : keys) {
-            Product product = productRepository.findById(productId).orElseThrow(() -> {
-                log.warn("Product with id = {} not exists", productId);
-                return new RuntimeException("Product is not exists, learn more in logs/debug.log");
-            });
+        List<SupplierOrderItem> supplierOrderItemList = orderItems.keySet()
+                .stream()
+                .map(this::findByProductId)
+                .map(product -> createSupplierOrderItem(product, supplierOrder, orderItems.get(product.getId())))
+                .collect(Collectors.toList());
 
-            SupplierOrderItem supplierOrderItem = new SupplierOrderItem();
-            supplierOrderItem.setProduct(product);
-            supplierOrderItem.setSupplierOrder(supplierOrder);
-            supplierOrderItem.setQuantity(orderItems.get(productId));
-
-            supplierOrder.getSupplierOrderItems().add(supplierOrderItem);
-
-            supplierOrderItemList = supplierOrder.getSupplierOrderItems();
-        }
-        if (supplierOrder.getSupplierOrderItems().isEmpty()) {
-            log.info("Supplier order has not items");
+        if (supplierOrderItemList.isEmpty()) {
+            log.warn("Supplier order has not items");
             throw new RuntimeException("Supplier order items is empty");
         }
 
         supplierOrder.setSupplierOrderItems(supplierOrderItemList);
-
-        Double price = 0.0;
-
-        for (SupplierOrderItem supplierOrderItem : supplierOrderItemList) {
-            Long supplierOrderItemQuantity = supplierOrderItem.getQuantity();
-            Catalog catalog = supplierOrderItem.getProduct().getCatalog();
-            price += calculatePrice(catalog, supplierOrderItemQuantity);
-            supplierOrder.setPrice(price);
-        }
-
-        UUID paymentId = supplierStubService.send();
-        supplierOrder.setPaymentId(paymentId);
+        supplierOrder.setPrice(calculatePrice(supplierOrderItemList));
+        supplierOrder.setPaymentId(supplierStubService.send());
 
         supplierOrderRepository.save(supplierOrder);
 
@@ -114,36 +96,57 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
      *
      * @param paymentId - entry ID from SupplierOrder
      * @return if exist supplier order
-     * else null
+     * @throws RuntimeException if supplier order with concrete payment id is not exists
      */
     @Override
     public SupplierOrder checkOrderByPaymentId(UUID paymentId) {
 
-        try {
-            Optional<SupplierOrder> supplierOrderOptional = supplierOrderRepository
-                    .findByPaymentId(paymentId);
+        SupplierOrder supplierOrder = supplierOrderRepository
+                .findByPaymentId(paymentId).orElseThrow(() -> {
+                    log.warn("Supplier order with payment id = {} is not exists", paymentId);
+                    return new RuntimeException("Supplier order is not exists, learn more in logs/debug.log");
+                });
 
-            if (supplierOrderOptional.isPresent()) {
-                return supplierOrderOptional.get();
-            } else {
-                log.warn("Supplier order with payment id= {} is not exists", paymentId);
-                return null;
-            }
-        } catch (ClassCastException e) {
-            e.getMessage();
-        }
-        return null;
+        return supplierOrder;
     }
 
     /**
      * This method calculate price for field price in exemplar {@link SupplierOrder} class
      *
-     * @param catalog                   - input exemplar {@link Catalog} class for get price by one item
-     * @param supplierOrderItemQuantity - input quantity items in order
      * @return result price for supplier order
      */
-    private Double calculatePrice(Catalog catalog, Long supplierOrderItemQuantity) {
-        Double price = catalog.getPrice();
-        return price * supplierOrderItemQuantity;
+    private Double calculatePrice(List<SupplierOrderItem> supplierOrderItemList) {
+        return supplierOrderItemList.stream()
+                .mapToDouble(price -> price.getProduct().getCatalog().getPrice() * price.getQuantity())
+                .sum();
+    }
+
+    /**
+     * This method find product bu id
+     *
+     * @param productId - input product id for find product
+     * @return product if exists or {@link RuntimeException} if product is not exists
+     */
+    private Product findByProductId(UUID productId) {
+        return productRepository.findById(productId).orElseThrow(() -> {
+            log.warn("Product with id = {} is not exists", productId);
+            return new RuntimeException("Product is not exists, learn more in logs/debug.log");
+        });
+    }
+
+    /**
+     * This method create object of {@link SupplierOrderItem} and initialize this object
+     *
+     * @param product       - input exemplar {@link Product}
+     * @param supplierOrder - input exemplar {@link SupplierOrder}
+     * @param quantity      - input quantity from orderItems map
+     * @return supplierOrderItem
+     */
+    private SupplierOrderItem createSupplierOrderItem(Product product, SupplierOrder supplierOrder, int quantity) {
+        SupplierOrderItem supplierOrderItem = new SupplierOrderItem();
+        supplierOrderItem.setProduct(product);
+        supplierOrderItem.setSupplierOrder(supplierOrder);
+        supplierOrderItem.setQuantity(quantity);
+        return supplierOrderItem;
     }
 }

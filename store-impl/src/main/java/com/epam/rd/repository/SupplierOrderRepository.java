@@ -21,7 +21,7 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
 
-    private static final String FIND_BY_PAYMENT_ID = "select * from SupplierOrder so where so.paymentId = : paymentId";
+    private static final String FIND_BY_PAYMENT_ID = "select * from SupplierOrder so where so.paymentId = :paymentId";
 
     private final EntityManager entityManager = Persistence
             .createEntityManagerFactory("store-pu")
@@ -38,7 +38,7 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
         try {
             log.info("findById() - find supplier order by id= {}", id);
             return ofNullable(entityManager.find(SupplierOrder.class, id));
-        } catch (PersistenceException e) {
+        } catch (Exception e) {
             log.warn("Error during searching by id= {}", id, e);
         }
         return empty();
@@ -122,7 +122,7 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
      * This method find record by payment ID
      *
      * @param paymentId - entry payment ID
-     * @return Object or optional of SupplierOrder
+     * @return Optional of SupplierOrder
      */
     public Optional<SupplierOrder> findByPaymentId(UUID paymentId) {
         try {
