@@ -1,6 +1,5 @@
 package com.epam.rd.service.impl;
 
-import com.epam.rd.entity.Catalog;
 import com.epam.rd.entity.Product;
 import com.epam.rd.entity.SupplierOrder;
 import com.epam.rd.entity.SupplierOrderItem;
@@ -55,7 +54,8 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
         List<SupplierOrderItem> supplierOrderItemList = orderItems.keySet()
                 .stream()
                 .map(this::findByProductId)
-                .map(product -> createSupplierOrderItem(product, supplierOrder, orderItems.get(product.getId())))
+                .map(product -> createSupplierOrderItem(product, orderItems.get(product.getId())))
+                .map(supplierOrderItem -> addSupplierOrderInSupplierOrderItem(supplierOrderItem, supplierOrder))
                 .collect(Collectors.toList());
 
         if (supplierOrderItemList.isEmpty()) {
@@ -101,13 +101,11 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
     @Override
     public SupplierOrder checkOrderByPaymentId(UUID paymentId) {
 
-        SupplierOrder supplierOrder = supplierOrderRepository
+        return supplierOrderRepository
                 .findByPaymentId(paymentId).orElseThrow(() -> {
                     log.warn("Supplier order with payment id = {} is not exists", paymentId);
                     return new RuntimeException("Supplier order is not exists, learn more in logs/debug.log");
                 });
-
-        return supplierOrder;
     }
 
     /**
@@ -137,16 +135,26 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
     /**
      * This method create object of {@link SupplierOrderItem} and initialize this object
      *
-     * @param product       - input exemplar {@link Product}
-     * @param supplierOrder - input exemplar {@link SupplierOrder}
-     * @param quantity      - input quantity from orderItems map
+     * @param product  - input exemplar {@link Product}
+     * @param quantity - input quantity from orderItems map
      * @return supplierOrderItem
      */
-    private SupplierOrderItem createSupplierOrderItem(Product product, SupplierOrder supplierOrder, int quantity) {
+    private SupplierOrderItem createSupplierOrderItem(Product product, int quantity) {
         SupplierOrderItem supplierOrderItem = new SupplierOrderItem();
         supplierOrderItem.setProduct(product);
-        supplierOrderItem.setSupplierOrder(supplierOrder);
         supplierOrderItem.setQuantity(quantity);
+        return supplierOrderItem;
+    }
+
+    /**
+     * This method add field supplierOrder on object of {@link SupplierOrderItem}
+     *
+     * @param supplierOrderItem - input exemplar {@link SupplierOrderItem}
+     * @param supplierOrder     - input exemplar {@link SupplierOrder} for fill in
+     * @return fully filled supplierOrderItem
+     */
+    private SupplierOrderItem addSupplierOrderInSupplierOrderItem(SupplierOrderItem supplierOrderItem, SupplierOrder supplierOrder) {
+        supplierOrderItem.setSupplierOrder(supplierOrder);
         return supplierOrderItem;
     }
 }

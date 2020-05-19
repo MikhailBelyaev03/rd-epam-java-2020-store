@@ -7,6 +7,7 @@ import com.epam.rd.entity.SupplierOrderItem;
 import com.epam.rd.repository.ProductRepository;
 import com.epam.rd.repository.SupplierOrderItemRepository;
 import com.epam.rd.repository.SupplierOrderRepository;
+import com.epam.rd.service.stub.SupplierStubService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,12 +17,17 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 
 /**
  * @{code SupplierOrderServiceImplTest} testing work {@link SupplierOrderServiceImpl}
@@ -40,11 +46,14 @@ public class SupplierOrderServiceImplTest {
     @Mock
     private ProductRepository productRepository = new ProductRepository();
 
+    @Mock
+    private SupplierStubService supplierStubService = new SupplierStubService();
+
     @InjectMocks
     private SupplierOrderServiceImpl supplierOrderService = new SupplierOrderServiceImpl();
 
     @Test
-    public void createTest() {
+    public void testCreateWhenTheProductExists() {
         //UUID uuid = UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99");
         SupplierOrder expectedSupplierOrder = new SupplierOrder();
 
@@ -64,28 +73,56 @@ public class SupplierOrderServiceImplTest {
         expectedSupplierOrder.getSupplierOrderItems().add(supplierOrderItem);
         expectedSupplierOrder.setPrice(100.0);
         expectedSupplierOrder.setStatus("IN PROGRESS");
-        expectedSupplierOrder.setPaymentId(UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99"));
+
+        when(supplierStubService.send()).thenReturn(UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99"));
+
+        expectedSupplierOrder.setPaymentId(supplierStubService.send());
 
         Map<UUID, Integer> orderItem = new HashMap<>();
         orderItem.put(uuidProduct, 100);
 
 
-        when(productRepository.findById(uuidProduct)).thenReturn(Optional.ofNullable(product));
+        when(productRepository.findById(uuidProduct)).thenReturn(of(product));
+
+        doNothing().when(supplierOrderItemRepository).save(supplierOrderItem);
 
         SupplierOrder actualSupplierOrder = supplierOrderService.create(orderItem);
 
-        doNothing().when(supplierOrderItemRepository).save(supplierOrderItem);
+        verify(supplierOrderRepository).save(any(SupplierOrder.class));
+        verify(productRepository).findById(uuidProduct);
 
         assertEquals(expectedSupplierOrder, actualSupplierOrder);
     }
 
     @Test
-    public void markAsDeliveredTest() {
+    public void testCreateWhenTheProductNotExists() {
+        UUID uuidProduct = UUID.fromString("0afd3797-f753-4aed-94a1-0c7a0a053d21");
+        Map<UUID, Integer> orderItem = new HashMap<>();
+        orderItem.put(uuidProduct, 100);
+
+        doNothing().when(supplierOrderRepository).save(any(SupplierOrder.class));
+        when(productRepository.findById(uuidProduct)).thenReturn(empty());
+        SupplierOrder actualSupplierOrder = null;
+        try {
+            actualSupplierOrder = supplierOrderService.create(orderItem);
+            fail("No RuntimeException");
+        } catch (RuntimeException e) {
+
+        }
+
+        verify(supplierOrderRepository, never()).save(any(SupplierOrder.class));
+        verify(productRepository).findById(uuidProduct);
+
+        assertNull(actualSupplierOrder);
+    }
+
+    @Test
+    public void testMarkAsDeliveredWhenTheOrderExists() {
         UUID uuid = UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99");
         SupplierOrder supplierOrder = new SupplierOrder();
         supplierOrder.setId(uuid);
 
-        when(supplierOrderRepository.findById(uuid)).thenReturn(Optional.ofNullable(supplierOrder));
+        when(supplierOrderRepository.findById(uuid)).thenReturn(of(supplierOrder));
         supplierOrderService.markAsDelivered(uuid);
         verify(supplierOrderRepository).save(supplierOrder);
 
@@ -93,14 +130,52 @@ public class SupplierOrderServiceImplTest {
     }
 
     @Test
-    public void checkOrderByPaymentIdTest() {
+    public void testMarkAsDeliveredWhenTheOrderIsNotFound() {
         UUID uuid = UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99");
         SupplierOrder supplierOrder = new SupplierOrder();
-        supplierOrder.setPaymentId(uuid);
+        supplierOrder.setId(uuid);
 
-        when(supplierOrderRepository.findByPaymentId(uuid)).thenReturn(Optional.ofNullable(supplierOrder));
-        SupplierOrder actual = supplierOrderService.checkOrderByPaymentId(uuid);
+        when(supplierOrderRepository.findById(uuid)).thenReturn(empty());
 
-        assertEquals(actual.getId(), supplierOrder.getId());
+        try {
+            supplierOrderService.markAsDelivered(uuid);
+            fail("No RuntimeException");
+        } catch (RuntimeException e) {
+
+        }
+
+        verify(supplierOrderRepository, never()).save(supplierOrder);
+        assertNull(supplierOrder.getStatus());
+    }
+
+    @Test
+    public void testCheckOrderByPaymentIdWhenTheOrderExists() {
+        UUID paymentId = UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99");
+        SupplierOrder supplierOrder = new SupplierOrder();
+        supplierOrder.setPaymentId(paymentId);
+
+        when(supplierOrderRepository.findByPaymentId(paymentId)).thenReturn(of(supplierOrder));
+        SupplierOrder actual = supplierOrderService.checkOrderByPaymentId(paymentId);
+
+        assertEquals(actual.getPaymentId(), supplierOrder.getPaymentId());
+    }
+
+    @Test
+    public void testCheckOrderByPaymentIdWhenTheOrderNotFound() {
+        UUID paymentId = UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99");
+        SupplierOrder supplierOrder = new SupplierOrder();
+        supplierOrder.setPaymentId(paymentId);
+
+        when(supplierOrderRepository.findByPaymentId(paymentId)).thenReturn(empty());
+
+        SupplierOrder actual = null;
+        try {
+            actual = supplierOrderService.checkOrderByPaymentId(paymentId);
+            fail("No RuntimeException");
+        } catch (RuntimeException e) {
+
+        }
+
+        assertNull(actual);
     }
 }
