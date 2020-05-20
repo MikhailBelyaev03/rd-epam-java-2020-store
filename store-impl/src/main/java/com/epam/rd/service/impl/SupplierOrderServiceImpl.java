@@ -83,7 +83,7 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
     public void markAsDelivered(UUID supplierOrderId) {
         SupplierOrder supplierOrder = supplierOrderRepository.findById(supplierOrderId).orElseThrow(() -> {
             log.warn("Order for supplier with id = {} is not exists", supplierOrderId);
-            return new RuntimeException("Order for supplier is not exists, for info logs/debug.log");
+            return new RuntimeException("Order for supplier not found by supplier order id");
         });
         supplierOrder.setStatus(SUPPLIER_ORDER_STATUS_DELIVERED);
         supplierOrderRepository.save(supplierOrder);
@@ -104,7 +104,7 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
         return supplierOrderRepository
                 .findByPaymentId(paymentId).orElseThrow(() -> {
                     log.warn("Supplier order with payment id = {} is not exists", paymentId);
-                    return new RuntimeException("Supplier order is not exists, learn more in logs/debug.log");
+                    return new RuntimeException("Supplier order not found by payment id");
                 });
     }
 
@@ -120,7 +120,7 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
     }
 
     /**
-     * This method find product bu id
+     * This method find product by id
      *
      * @param productId - input product id for find product
      * @return product if exists or {@link RuntimeException} if product is not exists
@@ -128,7 +128,7 @@ public class SupplierOrderServiceImpl implements SupplierOrderService {
     private Product findByProductId(UUID productId) {
         return productRepository.findById(productId).orElseThrow(() -> {
             log.warn("Product with id = {} is not exists", productId);
-            return new RuntimeException("Product is not exists, learn more in logs/debug.log");
+            return new RuntimeException("Product not found by product id");
         });
     }
 
