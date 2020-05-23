@@ -7,7 +7,7 @@ public interface ProductService {
 
     void calculateStock();
 
-    void receiveDelivery(Map<UUID, Integer> deliveryItems);
+    void receiveDelivery(UUID deliveredSupplierOrder);
 
     void reserveProduct(UUID productId, int quantity);
 }

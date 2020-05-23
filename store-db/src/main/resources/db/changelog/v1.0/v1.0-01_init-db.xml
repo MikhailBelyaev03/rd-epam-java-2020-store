@@ -45,7 +45,7 @@
     <changeSet id="2020-04-25-create-table-supplier_order" author="Yurchenko_Dmitriy">
         <createTable tableName="${prefix}supplier_order">
             <column name="id" type="UUID"/>
-            <column name="amount" type="int8"/>
+            <column name="price" type="double precision"/>
             <column name="status" type="varchar"/>
             <column name="payment_callback_url" type="varchar"/>
             <column name="payment_id" type="UUID"/>

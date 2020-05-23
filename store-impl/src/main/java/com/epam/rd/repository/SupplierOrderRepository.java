@@ -11,12 +11,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
+
 /**
  * @author Belousov Anton
  * @{code SupplierOrderRepository} describe work with table st_supplier_order on DB.
  */
 @Slf4j
 public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
+
+    private static final String FIND_BY_PAYMENT_ID = "select * from SupplierOrder so where so.paymentId = :paymentId";
+
     private final EntityManager entityManager = Persistence
             .createEntityManagerFactory("store-pu")
             .createEntityManager();
@@ -31,11 +37,11 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
     public Optional<SupplierOrder> findById(UUID id) {
         try {
             log.info("findById() - find supplier order by id= {}", id);
-            return Optional.ofNullable(entityManager.find(SupplierOrder.class, id));
-        } catch (PersistenceException e) {
+            return ofNullable(entityManager.find(SupplierOrder.class, id));
+        } catch (Exception e) {
             log.warn("Error during searching by id= {}", id, e);
         }
-        return Optional.empty();
+        return empty();
     }
 
     /**
@@ -110,5 +116,22 @@ public class SupplierOrderRepository implements CrudRepository<SupplierOrder> {
             log.warn("Error during existence check by id= {}", id, e);
         }
         return false;
+    }
+
+    /**
+     * This method find record by payment ID
+     *
+     * @param paymentId - entry payment ID
+     * @return Optional of SupplierOrder
+     */
+    public Optional<SupplierOrder> findByPaymentId(UUID paymentId) {
+        try {
+            log.info("findByPaymentID - find supplier order with payment id= {}", paymentId);
+            return ofNullable(entityManager
+                    .createQuery(FIND_BY_PAYMENT_ID, SupplierOrder.class).getSingleResult());
+        } catch (PersistenceException e) {
+            log.warn("Error during searching by payment id = {}", paymentId);
+        }
+        return empty();
     }
 }
