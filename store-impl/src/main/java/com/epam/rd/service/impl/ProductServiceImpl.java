@@ -43,13 +43,13 @@ public class ProductServiceImpl implements ProductService {
 
         List<Product> productList = productRepository.findAll();
 
-        productMap = productList.stream().filter(product -> this.getQuantity(product) < 100)
+        productMap = productList.stream()
+                .filter(product -> this.extractQuantity(product) < 100)
                 .collect(Collectors.toMap(this::getListUuid,
                         this::getNeedQuantity));
 
         if (productMap.isEmpty()) {
-            log.warn("Quantity for all products more then 100");
-            throw new RuntimeException("Quantity for all products more then 100");
+            log.info("All goods in stock");
         }
 
         supplierOrderService.create(productMap);
@@ -72,6 +72,7 @@ public class ProductServiceImpl implements ProductService {
         supplierOrder.getSupplierOrderItems().forEach(supplierOrderItem -> {
             Product product = supplierOrderItem.getProduct();
             product.getCatalog().setQuantity(calculateNewQuantity(product, supplierOrderItem));
+            catalogRepository.save(product.getCatalog());
         });
     }
 
@@ -89,7 +90,13 @@ public class ProductServiceImpl implements ProductService {
         });
 
         Catalog catalog = product.getCatalog();
-        catalog.setQuantity(this.getQuantity(product) - quantity);
+
+        if (extractQuantity(product) < quantity) {
+            log.warn("The quantity of goods in stock is less than necessary for the order");
+            throw new RuntimeException("The quantity of goods in stock is less than necessary for the order");
+        }
+
+        catalog.setQuantity(extractQuantity(product) - quantity);
 
         catalogRepository.save(catalog);
     }
@@ -100,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
      * @param product - input concrete product
      * @return quantity of concrete product
      */
-    private Integer getQuantity(Product product) {
+    private Integer extractQuantity(Product product) {
         return product.getCatalog().getQuantity();
     }
 

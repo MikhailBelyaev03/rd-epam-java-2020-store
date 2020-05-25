@@ -3,6 +3,7 @@ package com.epam.rd.service.impl;
 import com.epam.rd.entity.Catalog;
 import com.epam.rd.entity.Product;
 import com.epam.rd.entity.SupplierOrder;
+import com.epam.rd.entity.SupplierOrderItem;
 import com.epam.rd.repository.CatalogRepository;
 import com.epam.rd.repository.ProductRepository;
 import com.epam.rd.repository.SupplierOrderRepository;
@@ -71,12 +72,8 @@ public class ProductServiceImplTest {
 
         Map<UUID, Integer> map = null;
 
-        try {
-            productService.calculateStock();
-            fail("No Runtime Exception");
-        } catch (RuntimeException e) {
+        productService.calculateStock();
 
-        }
         verify(supplierOrderService, never()).create(map);
         assertNull(map);
     }
@@ -84,22 +81,27 @@ public class ProductServiceImplTest {
     @Test
     public void testReceiveDeliveryWhenDeliveredSupplierOrderIdExists() {
 
+        Product product = createProduct();
+
+        List<SupplierOrderItem> supplierOrderItemList = createSupplierOrderItemList(product);
+
         UUID uuid = UUID.fromString("96d989e7-3d64-4e72-ab06-b3ec52f31f99");
         SupplierOrder supplierOrder = new SupplierOrder();
         supplierOrder.setId(uuid);
+        supplierOrder.setSupplierOrderItems(supplierOrderItemList);
 
         when(supplierOrderRepository.findById(uuid)).thenReturn(of(supplierOrder));
-
-        Product product = createProduct();
 
         Integer oldQuantity = product.getCatalog().getQuantity();
 
         doNothing().when(supplierOrderRepository).save(supplierOrder);
+        doNothing().when(catalogRepository).save(product.getCatalog());
         productService.receiveDelivery(supplierOrder.getId());
 
         assertNotEquals(of(product.getCatalog().getQuantity()), oldQuantity);
 
         verify(supplierOrderService).markAsDelivered(supplierOrder.getId());
+        verify(catalogRepository).save(product.getCatalog());
     }
 
     @Test
@@ -128,11 +130,12 @@ public class ProductServiceImplTest {
 
         Product product = createProduct();
         when(productRepository.findById(uuid)).thenReturn(of(product));
+        Integer externalQuantity = 50;
         Integer oldQuantity = product.getCatalog().getQuantity();
 
         doNothing().when(catalogRepository).save(product.getCatalog());
 
-        productService.reserveProduct(product.getId(), product.getCatalog().getQuantity());
+        productService.reserveProduct(product.getId(), externalQuantity);
         verify(catalogRepository).save(product.getCatalog());
 
         assertNotEquals(of(product.getCatalog().getQuantity()), oldQuantity);
@@ -145,11 +148,30 @@ public class ProductServiceImplTest {
 
         Product product = createProduct();
         when(productRepository.findById(uuid)).thenReturn(empty());
+        Integer externalQuantity = 50;
         doNothing().when(catalogRepository).save(product.getCatalog());
 
         try {
-            productService.reserveProduct(product.getId(), product.getCatalog().getQuantity());
+            productService.reserveProduct(product.getId(), externalQuantity);
             fail("No RuntimeException");
+        } catch (RuntimeException e) {
+
+        }
+    }
+
+    @Test
+    public void testReserveProductWhenTheQuantityOfGoodsLessThenNeedForOrder() {
+
+        UUID uuid = UUID.fromString("0afd3797-f753-4aed-94a1-0c7a0a053d21");
+
+        Integer externalQuantity = 150;
+        Product product = createProduct();
+        when(productRepository.findById(uuid)).thenReturn(of(product));
+
+        doNothing().when(catalogRepository).save(product.getCatalog());
+        try {
+            productService.reserveProduct(product.getId(), externalQuantity);
+            fail("No Runtime Exception");
         } catch (RuntimeException e) {
 
         }
@@ -199,5 +221,19 @@ public class ProductServiceImplTest {
         product.setCatalog(catalog);
 
         return product;
+    }
+
+    private List<SupplierOrderItem> createSupplierOrderItemList(Product product) {
+        List<SupplierOrderItem> supplierOrderItemList = new ArrayList<>();
+
+        SupplierOrderItem supplierOrderItem = new SupplierOrderItem();
+
+        supplierOrderItem.setId(UUID.fromString("0afd3797-f753-4aed-94a1-0c7a0a053d21"));
+        supplierOrderItem.setProduct(product);
+        supplierOrderItem.setQuantity(50);
+
+        supplierOrderItemList.add(supplierOrderItem);
+
+        return supplierOrderItemList;
     }
 }
