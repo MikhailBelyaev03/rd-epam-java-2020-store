@@ -84,7 +84,7 @@
     <changeSet id="2020-04-25-create-table-client_order" author="Yurchenko_Dmitriy">
         <createTable tableName="${prefix}client_order">
             <column name="id" type="UUID"/>
-            <column name="amount" type="int8"/>
+            <column name="price" type="double precision"/>
             <column name="status" type="varchar"/>
             <column name="payment_id" type="UUID"/>
         </createTable>

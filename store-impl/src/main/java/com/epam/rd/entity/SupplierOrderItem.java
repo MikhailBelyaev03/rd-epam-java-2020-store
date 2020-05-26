@@ -30,8 +30,8 @@ public class SupplierOrderItem {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
-        name = "UUID",
-        strategy = "org.hibernate.id.UUIDGenerator"
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
     )
     private UUID id;
 
@@ -43,5 +43,5 @@ public class SupplierOrderItem {
     @JoinColumn(name = "order_id")
     private SupplierOrder supplierOrder;
 
-    private long quantity;
+    private int quantity;
 }

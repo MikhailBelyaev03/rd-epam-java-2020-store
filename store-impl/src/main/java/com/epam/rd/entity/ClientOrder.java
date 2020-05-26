@@ -29,7 +29,7 @@ public class ClientOrder {
             strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    private long amount;
+    private double price;
 
     private String status;
 
