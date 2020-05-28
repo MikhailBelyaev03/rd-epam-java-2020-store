@@ -30,6 +30,9 @@
         <hibernate.version>5.4.14.Final</hibernate.version>
         <junit.version>4.13</junit.version>
         <mockito.version>1.10.19</mockito.version>
+        <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
+        <spring-boot-starter-web.version>2.3.0.RELEASE</spring-boot-starter-web.version>
+        <spring-boot-starter-data-jpa.version>2.3.0.RELEASE</spring-boot-starter-data-jpa.version>
     </properties>
 
     <dependencyManagement>
@@ -82,6 +85,22 @@
                 <artifactId>mockito-all</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring-boot-starter-web.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jpa</artifactId>
+                <version>${spring-boot-starter-data-jpa.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
