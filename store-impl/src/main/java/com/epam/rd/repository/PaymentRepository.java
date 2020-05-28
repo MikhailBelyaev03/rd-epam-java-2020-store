@@ -1,19 +1,18 @@
 package com.epam.rd.repository;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 import com.epam.rd.entity.Payment;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static java.util.Optional.ofNullable;
-import static java.util.Optional.empty;
 
 /**
  * Payment repository for working with payment table in database
@@ -23,7 +22,7 @@ import static java.util.Optional.empty;
 @Slf4j
 public class PaymentRepository implements CrudRepository<Payment> {
 
-    private static final String FIND_BY_SUPPLIER_ORDER_ID = "select * from Payment p where p.supplier_order_id = :supplierOrderId";
+    private static final String FIND_BY_SUPPLIER_ORDER_ID = "FROM Payment where supplier_order_id = :supplierOrderId";
     private final EntityManager entityManager = Persistence.createEntityManagerFactory("store-pu").createEntityManager();
 
     /**
@@ -115,18 +114,18 @@ public class PaymentRepository implements CrudRepository<Payment> {
         return false;
     }
 
-
     public Optional<Payment> findBySupplierOrderId(UUID supplierOrderId) {
         try {
+            Query query = entityManager.createQuery(FIND_BY_SUPPLIER_ORDER_ID);
+            query.setParameter("supplierOrderId", supplierOrderId);
+            Optional<Payment> paymentOptional = ofNullable((Payment) query.getSingleResult());
             log.info("findByPaymentID - find supplier order with payment id= {}", supplierOrderId);
-            return ofNullable(entityManager
-                    .createQuery(FIND_BY_SUPPLIER_ORDER_ID, Payment.class).getSingleResult());
-        } catch (PersistenceException e) {
-            log.warn("Error during searching by payment id = {}", supplierOrderId);
+            return paymentOptional;
+        } catch (Exception e) {
+            log.warn("Error during searching by payment id = {}, Message: {}", supplierOrderId, e.getMessage());
         }
         return Optional.empty();
     }
-
 }
 
 
