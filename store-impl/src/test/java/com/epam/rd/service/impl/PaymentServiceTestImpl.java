@@ -1,5 +1,7 @@
 package com.epam.rd.service.impl;
 
+import com.epam.rd.Application;
+import com.epam.rd.entity.ClientOrder;
 import com.epam.rd.entity.Payment;
 import com.epam.rd.entity.SupplierOrder;
 import com.epam.rd.repository.PaymentRepository;
@@ -9,6 +11,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.UUID;
 
@@ -22,19 +28,24 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class)
 public class PaymentServiceTestImpl {
 
-    @Mock
+    @MockBean
     private PaymentRepository paymentRepository;
 
-    @Mock
+    @MockBean
     private ClientOrderServiceImpl clientOrderService;
 
-    @Mock
+    @MockBean
     private PaymentStubService paymentStubService;
 
+    @MockBean
+    private SupplierOrderServiceImpl supplierOrderService;
+
     @InjectMocks
+    @Autowired
     private PaymentServiceImpl paymentService;
 
     @Test
@@ -43,7 +54,6 @@ public class PaymentServiceTestImpl {
         Payment payment = new Payment();
         payment.setId(uuid);
 
-        doNothing().when(paymentRepository).save(payment);
         Payment actualPayment = paymentService.create(payment);
 
         verify(paymentRepository).save(payment);
@@ -61,9 +71,13 @@ public class PaymentServiceTestImpl {
         payment.setInnShop("3");
         payment.setPaymentAccountShop("4");
 
+        SupplierOrder supplierOrder = new SupplierOrder();
+        supplierOrder.setId(uuid);
+
         when(paymentRepository.findBySupplierOrderId(uuid)).thenReturn(of(payment));
         when(paymentRepository.findById(paymentRepository.findBySupplierOrderId(uuid).get().getId())).thenReturn(of(payment));
         when(paymentStubService.send()).thenReturn(true);
+        when(supplierOrderService.checkOrderByPaymentId(payment.getId())).thenReturn(supplierOrder);
 
         assertTrue(paymentService.pay(uuid));
     }
@@ -119,12 +133,14 @@ public class PaymentServiceTestImpl {
         payment.setInnShop("3");
         payment.setPaymentAccountShop("4");
 
-        doNothing().when(clientOrderService).markAsPaid(payment.getClientOrder().getId());
+        ClientOrder clientOrder = new ClientOrder();
+        clientOrder.setId(UUID.fromString("e1712476-8127-11ea-a5f1-001e101f0000"));
+        payment.setClientOrder(clientOrder);
+
         when(paymentRepository.findById(uuid)).thenReturn(of(payment));
 
-        verify(clientOrderService).markAsPaid(payment.getClientOrder().getId());
         boolean actual = paymentService.sell(uuid);
-
+        verify(clientOrderService).markAsPaid(payment.getClientOrder().getId());
         assertTrue(actual);
     }
 

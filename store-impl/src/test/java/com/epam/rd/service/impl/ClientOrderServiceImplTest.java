@@ -5,11 +5,11 @@ import static java.util.Optional.ofNullable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.mockito.BDDMockito.doNothing;
 import static org.mockito.BDDMockito.never;
 import static org.mockito.BDDMockito.verify;
 import static org.mockito.BDDMockito.when;
 import static org.mockito.Matchers.any;
+import com.epam.rd.Application;
 import com.epam.rd.entity.Catalog;
 import com.epam.rd.entity.ClientOrder;
 import com.epam.rd.entity.ClientOrderItem;
@@ -19,26 +19,31 @@ import com.epam.rd.repository.ProductRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class)
 public class ClientOrderServiceImplTest {
 
-    @Mock
+    @MockBean
     private ClientOrderRepository clientOrderRepository;
 
-    @Mock
+    @MockBean
     private ProductServiceImpl productService;
 
-    @Mock
+    @MockBean
     private ProductRepository productRepository;
 
     @InjectMocks
+    @Autowired
     private ClientOrderServiceImpl clientOrderService;
 
     @Test
@@ -55,8 +60,6 @@ public class ClientOrderServiceImplTest {
         Map<UUID, Integer> orderItem = new HashMap<>();
         orderItem.put(uuidProduct, quantity);
 
-        doNothing().when(productService).reserveProduct(uuidProduct, quantity);
-        doNothing().when(clientOrderRepository).save(any(ClientOrder.class));
         when(productRepository.findById(uuidProduct)).thenReturn(ofNullable(product));
 
         ClientOrder actualClientOrder = clientOrderService.create(orderItem);
@@ -74,7 +77,6 @@ public class ClientOrderServiceImplTest {
         Map<UUID, Integer> orderItem = new HashMap<>();
         orderItem.put(uuidProduct, 10);
 
-        doNothing().when(clientOrderRepository).save(any(ClientOrder.class));
         when(productRepository.findById(uuidProduct)).thenReturn(ofNullable(null));
         ClientOrder actualClientOrder = null;
         try {
@@ -150,7 +152,6 @@ public class ClientOrderServiceImplTest {
         clientOrder.setId(uuid);
 
         when(clientOrderRepository.findById(uuid)).thenReturn(ofNullable(clientOrder));
-        doNothing().when(clientOrderRepository).save(clientOrder);
 
         clientOrderService.markAsPaid(uuid);
 
@@ -167,7 +168,6 @@ public class ClientOrderServiceImplTest {
         clientOrder.setId(uuid);
 
         when(clientOrderRepository.findById(uuid)).thenReturn(empty());
-        doNothing().when(clientOrderRepository).save(clientOrder);
 
         try {
             clientOrderService.markAsPaid(uuid);

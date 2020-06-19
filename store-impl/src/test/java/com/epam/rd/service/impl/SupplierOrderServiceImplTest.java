@@ -1,5 +1,6 @@
 package com.epam.rd.service.impl;
 
+import com.epam.rd.Application;
 import com.epam.rd.entity.Catalog;
 import com.epam.rd.entity.Product;
 import com.epam.rd.entity.SupplierOrder;
@@ -13,6 +14,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.UUID;
 import java.util.HashMap;
@@ -24,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
@@ -34,23 +38,25 @@ import static org.mockito.Mockito.never;
  *
  * @author Belousov Anton
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class)
 public class SupplierOrderServiceImplTest {
 
-    @Mock
-    private SupplierOrderRepository supplierOrderRepository = new SupplierOrderRepository();
+    @MockBean
+    private SupplierOrderRepository supplierOrderRepository;
 
-    @Mock
-    private SupplierOrderItemRepository supplierOrderItemRepository = new SupplierOrderItemRepository();
+    @MockBean
+    private SupplierOrderItemRepository supplierOrderItemRepository;
 
-    @Mock
-    private ProductRepository productRepository = new ProductRepository();
+    @MockBean
+    private ProductRepository productRepository;
 
-    @Mock
-    private SupplierStubService supplierStubService = new SupplierStubService();
+    @MockBean
+    private SupplierStubService supplierStubService;
 
     @InjectMocks
-    private SupplierOrderServiceImpl supplierOrderService = new SupplierOrderServiceImpl();
+    @Autowired
+    private SupplierOrderServiceImpl supplierOrderService;
 
     @Test
     public void testCreateWhenTheProductExists() {
@@ -84,7 +90,7 @@ public class SupplierOrderServiceImplTest {
 
         when(productRepository.findById(uuidProduct)).thenReturn(of(product));
 
-        doNothing().when(supplierOrderItemRepository).save(supplierOrderItem);
+
 
         SupplierOrder actualSupplierOrder = supplierOrderService.create(orderItem);
 
@@ -100,7 +106,6 @@ public class SupplierOrderServiceImplTest {
         Map<UUID, Integer> orderItem = new HashMap<>();
         orderItem.put(uuidProduct, 100);
 
-        doNothing().when(supplierOrderRepository).save(any(SupplierOrder.class));
         when(productRepository.findById(uuidProduct)).thenReturn(empty());
         SupplierOrder actualSupplierOrder = null;
         try {
