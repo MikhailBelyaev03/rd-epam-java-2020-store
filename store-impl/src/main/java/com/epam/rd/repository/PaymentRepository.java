@@ -1,17 +1,18 @@
 package com.epam.rd.repository;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 import com.epam.rd.entity.Payment;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import static java.util.Optional.ofNullable;
-import static java.util.Optional.empty;
 
 /**
  * Payment repository for working with payment table in database
@@ -21,6 +22,7 @@ import static java.util.Optional.empty;
 @Slf4j
 public class PaymentRepository implements CrudRepository<Payment> {
 
+    private static final String FIND_BY_SUPPLIER_ORDER_ID = "FROM Payment where supplier_order_id = :supplierOrderId";
     private final EntityManager entityManager = Persistence.createEntityManagerFactory("store-pu").createEntityManager();
 
     /**
@@ -49,7 +51,7 @@ public class PaymentRepository implements CrudRepository<Payment> {
     public List<Payment> findAll() {
         try {
             log.info("findAll() - find all payments = {}");
-            TypedQuery<Payment> query = entityManager.createQuery("from Payment", Payment.class);
+            TypedQuery<Payment> query = entityManager.createQuery("FROM Payment", Payment.class);
             return query.getResultList();
         } catch (Exception e) {
             log.warn("Error during searching:", e);
@@ -67,16 +69,15 @@ public class PaymentRepository implements CrudRepository<Payment> {
         try {
             log.info("update() - update payment {}", payment);
             entityManager.getTransaction().begin();
-            if(payment.getId() != null){
+            if (payment.getId() != null) {
                 entityManager.merge(payment);
-            }else{
+            } else {
                 entityManager.persist(payment);
             }
             entityManager.getTransaction().commit();
         } catch (Exception e) {
             log.warn("Error during saving(updating)", e);
         }
-
     }
 
     /**
@@ -113,6 +114,18 @@ public class PaymentRepository implements CrudRepository<Payment> {
         return false;
     }
 
+    public Optional<Payment> findBySupplierOrderId(UUID supplierOrderId) {
+        try {
+            Query query = entityManager.createQuery(FIND_BY_SUPPLIER_ORDER_ID);
+            query.setParameter("supplierOrderId", supplierOrderId);
+            Optional<Payment> paymentOptional = ofNullable((Payment) query.getSingleResult());
+            log.info("findByPaymentID - find supplier order with payment id= {}", supplierOrderId);
+            return paymentOptional;
+        } catch (Exception e) {
+            log.warn("Error during searching by payment id = {}, Message: {}", supplierOrderId, e.getMessage());
+        }
+        return Optional.empty();
+    }
 }
 
 

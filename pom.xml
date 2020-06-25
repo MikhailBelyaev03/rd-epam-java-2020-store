@@ -68,6 +68,11 @@
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase.version}</version>
             </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/org.liquibase/liquibase-maven-plugin -->
             <dependency>
                 <groupId>org.liquibase</groupId>
