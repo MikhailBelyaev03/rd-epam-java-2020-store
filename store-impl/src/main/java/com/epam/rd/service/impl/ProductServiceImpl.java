@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -27,12 +29,17 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Data
 @Slf4j
+@Service
 public class ProductServiceImpl implements ProductService {
 
-    private ProductRepository productRepository = new ProductRepository();
-    private SupplierOrderServiceImpl supplierOrderService = new SupplierOrderServiceImpl();
-    private CatalogRepository catalogRepository = new CatalogRepository();
-    private SupplierOrderRepository supplierOrderRepository = new SupplierOrderRepository();
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private CatalogRepository catalogRepository;
+    @Autowired
+    private SupplierOrderRepository supplierOrderRepository;
+    @Autowired
+    private SupplierOrderServiceImpl supplierOrderService;
 
     /**
      * This method calculate stock of a products and create new order if stock less then 100
@@ -41,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     public void calculateStock() {
         Map<UUID, Integer> productMap;
 
-        List<Product> productList = productRepository.findAll();
+        List<Product> productList = (List<Product>) productRepository.findAll();
 
         productMap = productList.stream()
                 .filter(product -> this.extractQuantity(product) < 100)

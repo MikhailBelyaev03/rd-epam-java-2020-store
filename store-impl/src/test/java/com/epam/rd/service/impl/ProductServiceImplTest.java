@@ -1,5 +1,6 @@
 package com.epam.rd.service.impl;
 
+import com.epam.rd.Application;
 import com.epam.rd.entity.Catalog;
 import com.epam.rd.entity.Product;
 import com.epam.rd.entity.SupplierOrder;
@@ -12,6 +13,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.UUID;
 import java.util.Map;
@@ -28,30 +33,31 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.doNothing;
 
 /**
  * {@code ProductServiceImplTest} testing work {@link ProductServiceImpl}
  *
  * @author Belousov Anton
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class)
 public class ProductServiceImplTest {
 
-    @Mock
-    private ProductRepository productRepository = new ProductRepository();
+    @MockBean
+    private ProductRepository productRepository;
 
-    @Mock
-    private SupplierOrderServiceImpl supplierOrderService = new SupplierOrderServiceImpl();
+    @MockBean
+    private SupplierOrderServiceImpl supplierOrderService;
 
-    @Mock
-    private CatalogRepository catalogRepository = new CatalogRepository();
+    @MockBean
+    private CatalogRepository catalogRepository;
 
-    @Mock
-    private SupplierOrderRepository supplierOrderRepository = new SupplierOrderRepository();
+    @MockBean
+    private SupplierOrderRepository supplierOrderRepository;
 
     @InjectMocks
-    private ProductServiceImpl productService = new ProductServiceImpl();
+    @Autowired
+    private ProductServiceImpl productService;
 
     @Test
     public void testCalculateStockWhenMapNotEmpty() {
@@ -94,8 +100,7 @@ public class ProductServiceImplTest {
 
         Integer oldQuantity = product.getCatalog().getQuantity();
 
-        doNothing().when(supplierOrderRepository).save(supplierOrder);
-        doNothing().when(catalogRepository).save(product.getCatalog());
+
         productService.receiveDelivery(supplierOrder.getId());
 
         assertNotEquals(of(product.getCatalog().getQuantity()), oldQuantity);
@@ -133,7 +138,7 @@ public class ProductServiceImplTest {
         Integer externalQuantity = 50;
         Integer oldQuantity = product.getCatalog().getQuantity();
 
-        doNothing().when(catalogRepository).save(product.getCatalog());
+
 
         productService.reserveProduct(product.getId(), externalQuantity);
         verify(catalogRepository).save(product.getCatalog());
@@ -149,7 +154,6 @@ public class ProductServiceImplTest {
         Product product = createProduct();
         when(productRepository.findById(uuid)).thenReturn(empty());
         Integer externalQuantity = 50;
-        doNothing().when(catalogRepository).save(product.getCatalog());
 
         try {
             productService.reserveProduct(product.getId(), externalQuantity);
@@ -168,7 +172,6 @@ public class ProductServiceImplTest {
         Product product = createProduct();
         when(productRepository.findById(uuid)).thenReturn(of(product));
 
-        doNothing().when(catalogRepository).save(product.getCatalog());
         try {
             productService.reserveProduct(product.getId(), externalQuantity);
             fail("No Runtime Exception");

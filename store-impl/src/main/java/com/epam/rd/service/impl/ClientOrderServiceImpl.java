@@ -8,20 +8,26 @@ import com.epam.rd.repository.ProductRepository;
 import com.epam.rd.service.ClientOrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Service
 public class ClientOrderServiceImpl implements ClientOrderService {
 
     private static final Logger log = LoggerFactory.getLogger(ClientOrderRepository.class);
     private static final String STATUS_IN_PROGRESS = "IN PROGRESS";
     private static final String STATUS_PAID = "PAID";
-    private ClientOrderRepository clientOrderRepository = new ClientOrderRepository();
-    private ProductRepository productRepository = new ProductRepository();
-    private ProductServiceImpl productService = new ProductServiceImpl();
+    @Autowired
+    private ClientOrderRepository clientOrderRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private ProductServiceImpl productService;
 
     @Override
     public ClientOrder create(Map<UUID, Integer> orderItems) {

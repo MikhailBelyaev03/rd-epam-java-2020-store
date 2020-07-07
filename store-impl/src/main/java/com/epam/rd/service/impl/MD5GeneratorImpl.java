@@ -2,9 +2,11 @@ package com.epam.rd.service.impl;
 
 import com.epam.rd.entity.Payment;
 import com.epam.rd.service.MD5Generator;
+import org.springframework.stereotype.Service;
 
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
+@Service
 public class MD5GeneratorImpl implements MD5Generator {
     @Override
     public String MD5generate(Payment payment) {

@@ -6,6 +6,8 @@ import com.epam.rd.repository.PaymentRepository;
 import com.epam.rd.service.PaymentService;
 import com.epam.rd.service.stub.PaymentStubService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
@@ -13,12 +15,19 @@ import static java.util.Optional.ofNullable;
 
 
 @Slf4j
+@Service
 public class PaymentServiceImpl implements PaymentService {
-    private PaymentRepository paymentRepository = new PaymentRepository();
-    private PaymentStubService paymentStubService = new PaymentStubService();
-    private SupplierOrderServiceImpl supplierOrderService = new SupplierOrderServiceImpl();
-    private ClientOrderServiceImpl clientOrderService = new ClientOrderServiceImpl();
-    private MD5GeneratorImpl md5Generator = new MD5GeneratorImpl();
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+    @Autowired
+    private SupplierOrderServiceImpl supplierOrderService;
+    @Autowired
+    private ClientOrderServiceImpl clientOrderService;
+    @Autowired
+    private PaymentStubService paymentStubService;
+    @Autowired
+    private MD5GeneratorImpl md5Generator;
 
     /**
      * Create payment in database

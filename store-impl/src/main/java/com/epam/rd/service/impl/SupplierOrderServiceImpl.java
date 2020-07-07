@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -26,15 +28,19 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Data
 @Slf4j
+@Service
 public class SupplierOrderServiceImpl implements SupplierOrderService {
 
     private static final String SUPPLIER_ORDER_STATUS_IN_PROGRESS = "IN PROGRESS";
     private static final String SUPPLIER_ORDER_STATUS_DELIVERED = "DELIVERED";
     private static final String SUPPLIER_ORDER_PAYMENT_CALLBACK_URL = null;
 
-    private SupplierOrderRepository supplierOrderRepository = new SupplierOrderRepository();
-    private SupplierOrderItemRepository supplierOrderItemRepository = new SupplierOrderItemRepository();
-    private ProductRepository productRepository = new ProductRepository();
+    @Autowired
+    private SupplierOrderRepository supplierOrderRepository;
+    @Autowired
+    private SupplierOrderItemRepository supplierOrderItemRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
     private SupplierStubService supplierStubService = new SupplierStubService();
 
