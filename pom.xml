@@ -135,7 +135,6 @@
                 <configuration>
                     <excludes>
                         <exclude>com/epam/rd/entity/**/*</exclude>
-                        <exclude>com/epam/rd/repository/**/*</exclude>
                         <exclude>com/epam/rd/Application.class</exclude>
                     </excludes>
                 </configuration>
@@ -171,7 +170,7 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.5</minimum>
+                                            <minimum>0.85</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
