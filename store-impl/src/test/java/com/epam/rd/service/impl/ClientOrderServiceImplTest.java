@@ -66,8 +66,6 @@ public class ClientOrderServiceImplTest {
         UUID UUIProduct = UUID.randomUUID();
         expectedProduct.setId(UUIProduct);
 
-        when(clientOrderRepository.findById(UUIDOrder)).thenReturn(ofNullable(clientOrder));
-
         try {
             clientOrderService.create(actualOrderItems);
         } catch (RuntimeException re) {
