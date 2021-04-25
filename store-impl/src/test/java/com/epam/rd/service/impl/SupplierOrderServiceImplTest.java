@@ -15,15 +15,16 @@ import com.epam.rd.entity.SupplierOrder;
 import com.epam.rd.entity.SupplierOrderItem;
 import com.epam.rd.repository.ProductRepository;
 import com.epam.rd.repository.SupplierOrderRepository;
+import com.epam.rd.service.stub.SupplierStubService;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = Application.class)
 public class SupplierOrderServiceImplTest {
 
@@ -44,16 +45,18 @@ public class SupplierOrderServiceImplTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    @MockBean
+    @Mock
     private SupplierOrderRepository supplierOrderRepository;
 
-    @MockBean
+    @Mock
     private ProductRepository productRepository;
-
 
     @InjectMocks
     @Autowired
     private SupplierOrderServiceImpl supplierOrderService;
+
+    @Mock
+    private SupplierStubService supplierStubService = new SupplierStubService();
 
     @Test
     public void createWhenSupplierOrderIsNotNullCreateOrder() {
@@ -69,10 +72,11 @@ public class SupplierOrderServiceImplTest {
         Map<UUID, Integer> orderItem = new HashMap<>();
         orderItem.put(UUIDProduct, 100);
 
+        SupplierOrder o = new SupplierOrder();
         when(productRepository.findById(UUIDProduct)).thenReturn(of(product));
 
+        when(supplierStubService.send()).thenReturn(UUID.randomUUID());
         SupplierOrder actualSupplierOrder = supplierOrderService.create(orderItem);
-
         verify(supplierOrderRepository).save(any(SupplierOrder.class));
         verify(productRepository).findById(UUIDProduct);
 
@@ -94,12 +98,12 @@ public class SupplierOrderServiceImplTest {
         UUID expectedUUID = UUID.randomUUID();
         Map<UUID, Integer> orderItem = new HashMap<>();
         orderItem.put(expectedUUID, 100);
-        try {
-            supplierOrderService.create(orderItem);
-        } catch (RuntimeException re) {
-            String message = "Product not found by product id";
-            assertEquals(message, re.getMessage());
-        }
+
+        String expectedException = "Product not found by product id";
+        exception.expect(RuntimeException.class);
+        exception.expectMessage(expectedException);
+        supplierOrderService.create(orderItem);
+
     }
 
     @Test
@@ -120,12 +124,11 @@ public class SupplierOrderServiceImplTest {
         UUID expectedUUID = UUID.randomUUID();
         when(supplierOrderRepository.findById(expectedUUID))
                 .thenReturn(empty());
-        try {
-            supplierOrderService.markAsDelivered(expectedUUID);
-        } catch (RuntimeException re) {
-            String message = "Order for supplier not found by supplier order id";
-            assertEquals(message, re.getMessage());
-        }
+
+        String expectedException = "Order for supplier not found by supplier order id";
+        exception.expect(RuntimeException.class);
+        exception.expectMessage(expectedException);
+        supplierOrderService.markAsDelivered(expectedUUID);
     }
 
     @Test
@@ -136,12 +139,11 @@ public class SupplierOrderServiceImplTest {
 
         when(supplierOrderRepository.findByPaymentId(actualUUID))
                 .thenReturn(empty());
-        try {
-            supplierOrderService.checkOrderByPaymentId(actualUUID);
-        } catch (RuntimeException re) {
-            String message = "Supplier order not found by payment id";
-            assertEquals(message, re.getMessage());
-        }
+
+        String expectedException = "Supplier order not found by payment id";
+        exception.expect(RuntimeException.class);
+        exception.expectMessage(expectedException);
+        supplierOrderService.checkOrderByPaymentId(actualUUID);
 
     }
 

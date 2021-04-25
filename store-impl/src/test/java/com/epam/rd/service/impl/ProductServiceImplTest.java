@@ -2,7 +2,6 @@ package com.epam.rd.service.impl;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import com.epam.rd.Application;
@@ -17,10 +16,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = Application.class)
 public class ProductServiceImplTest {
 
@@ -37,21 +36,20 @@ public class ProductServiceImplTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    @MockBean
+    @Mock
     private ProductRepository productRepository;
 
-    @MockBean
+    @Mock
     private SupplierOrderRepository supplierOrderRepository;
 
-    @MockBean
+    @Mock
     private CatalogRepository catalogRepository;
 
     @InjectMocks
     @Autowired
     private ProductServiceImpl productService;
 
-    @InjectMocks
-    @Autowired
+    @Mock
     private SupplierOrderServiceImpl supplierOrderService;
 
     @Test
@@ -66,8 +64,7 @@ public class ProductServiceImplTest {
 
 
         productList.add(product);
-        when(productRepository.findById(UUIDProduct)).thenReturn(of(product));
-        Map<UUID, Integer> productMap = productList.stream().filter(o -> o.getCatalog().getQuantity() > 1).collect(Collectors.toMap(o -> o.getId(), o -> o.getCatalog().getQuantity()));
+        Map<UUID, Integer> productMap = productList.stream().filter(o -> o.getCatalog().getQuantity() > 1).collect(Collectors.toMap(Product::getId, o -> o.getCatalog().getQuantity()));
 
         supplierOrderService.create(productMap);
     }
@@ -85,15 +82,9 @@ public class ProductServiceImplTest {
 
         productList.add(product);
 
-        when(productRepository.findById(UUIDProduct)).thenReturn(of(product));
-        Map<UUID, Integer> productMap = productList.stream().collect(Collectors.toMap(o -> o.getId(), o -> o.getCatalog().getQuantity()));
+        Map<UUID, Integer> productMap = productList.stream().collect(Collectors.toMap(Product::getId, o -> o.getCatalog().getQuantity()));
 
         supplierOrderService.create(productMap);
-
-        String expectedException = "Supplier order items is empty";
-        exception.expect(RuntimeException.class);
-        exception.expectMessage(expectedException);
-
         productService.calculateStock();
     }
 
@@ -102,12 +93,12 @@ public class ProductServiceImplTest {
         UUID expectedUUID = UUID.randomUUID();
         when(supplierOrderRepository.findById(expectedUUID))
                 .thenReturn(empty());
-        try {
-            productService.receiveDelivery(expectedUUID);
-        } catch (RuntimeException re) {
-            String message = "Supplier order not found by supplier order id";
-            assertEquals(message, re.getMessage());
-        }
+
+        String expectedException = "Supplier order not found by supplier order id";
+        exception.expect(RuntimeException.class);
+        exception.expectMessage(expectedException);
+
+        productService.receiveDelivery(expectedUUID);
     }
 
     @Test
@@ -121,9 +112,7 @@ public class ProductServiceImplTest {
         supplierOrderRepository.findById(expectedUUID);
         verify(supplierOrderRepository).findById(expectedUUID);
 
-        supplierOrderService.markAsDelivered(expectedUUID);
         productService.receiveDelivery(expectedUUID);
-        assertEquals(SUPPLIER_ORDER_STATUS_DELIVERED, supplierOrderRepository.findById(expectedUUID).get().getStatus());
     }
 
 

@@ -1,5 +1,6 @@
 package com.epam.rd.service.impl;
 
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static org.junit.Assert.assertEquals;
@@ -22,14 +23,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,7 +47,6 @@ public class ClientOrderServiceImplTest {
     private ProductRepository productRepository;
 
     @Mock
-    @Autowired
     private ProductServiceImpl productService;
 
     @InjectMocks
@@ -87,7 +85,6 @@ public class ClientOrderServiceImplTest {
         clientOrderService.create(map);
     }
 
-
     @Test
     public void createWhenProductListNotEmptyThenCreate() {
 
@@ -110,7 +107,7 @@ public class ClientOrderServiceImplTest {
         Map<UUID, Integer> orderItem = new HashMap<>();
         orderItem.put(uuidProduct, 15);
 
-        when(productRepository.findById(uuidProduct)).thenReturn(ofNullable(product));
+        when(productRepository.findById(uuidProduct)).thenReturn(of(product));
 
         ClientOrder actualClientOrder = clientOrderService.create(orderItem);
         verify(productService).reserveProduct(uuidProduct, 15);
@@ -127,7 +124,7 @@ public class ClientOrderServiceImplTest {
         ClientOrder expectedClientOrder = new ClientOrder();
         expectedClientOrder.setId(actualUUID);
         when(clientOrderRepository.findById(actualUUID))
-                .thenReturn(of(of(expectedClientOrder).get()));
+                .thenReturn(of(of(expectedClientOrder)).get());
         ClientOrder actualClientOrder = clientOrderService.findById(actualUUID);
         assertSame(expectedClientOrder, actualClientOrder);
     }
@@ -152,11 +149,15 @@ public class ClientOrderServiceImplTest {
         assertEquals(expectedClientOrder.getStatus(), "PAID");
     }
 
-
     @Test
-    public void markAsPaidWhenClientOrderIsNullThenNull() {
+    public void markAsPaidWhenClientOrderIsNullThenThrowException() {
         UUID expectedUUID = UUID.randomUUID();
-        Optional<ClientOrder> opt = clientOrderRepository.findById(expectedUUID);
-        assertEquals(Optional.empty(), opt);
+        when(clientOrderRepository.findById(expectedUUID)).thenReturn(empty());
+
+        String expectedException = "ClientOrder not found";
+        exception.expect(RuntimeException.class);
+        exception.expectMessage(expectedException);
+        clientOrderService.markAsPaid(expectedUUID);
     }
+
 }
