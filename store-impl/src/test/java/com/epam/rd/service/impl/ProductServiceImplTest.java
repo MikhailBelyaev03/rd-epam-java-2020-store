@@ -46,15 +46,6 @@ public class ProductServiceImplTest {
     private ProductServiceImpl productService;
 
     @Test
-    public void calculateStockWhenRepositoryIsEmpty() {
-        List<Product> expectedListOfProducts = new ArrayList<>();
-        when((List<Product>) productRepository.findAll()).thenReturn(expectedListOfProducts);
-        productService.calculateStock();
-        Map<UUID, Integer> productMap = new HashMap<>();
-        verify(supplierOrderService).create(productMap);
-    }
-
-    @Test
     public void calculateStockWhenRepositoryIsNotEmpty() {
         Map<UUID, Integer> productMap = new HashMap<>();
         UUID expectedUUID = UUID.randomUUID();
@@ -114,6 +105,27 @@ public class ProductServiceImplTest {
         when(productRepository.findById(UUIDProduct)).thenReturn(of(expectedProduct));
         productService.reserveProduct(UUIDProduct, 10);
         verify(catalogRepository).save(actualCatalog);
+    }
+
+    @Test
+    public void reserveProductWhenQuantityProductNotEnoughThenThrowException() {
+
+        UUID expectedUUID = UUID.randomUUID();
+        Product product = new Product();
+        product.setId(expectedUUID);
+        Catalog catalog = new Catalog();
+        catalog.setQuantity(100);
+        product.setCatalog(catalog);
+        when(productRepository.findById(expectedUUID)).thenReturn(of(product));
+
+        try {
+            productService.reserveProduct(expectedUUID, 10);
+        } catch (RuntimeException re) {
+            String message = "The quantity of goods in stock is less than necessary for the order";
+            assertEquals(message, re.getMessage());
+        }
+
+
     }
 
 }
