@@ -4,7 +4,6 @@ import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -16,7 +15,9 @@ import com.epam.rd.entity.ClientOrderItem;
 import com.epam.rd.entity.Product;
 import com.epam.rd.repository.ClientOrderRepository;
 import com.epam.rd.repository.ProductRepository;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,6 +37,9 @@ import java.util.UUID;
 public class ClientOrderServiceImplTest {
 
     private static final String STATUS_IN_PROGRESS = "IN PROGRESS";
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Mock
     private ClientOrderRepository clientOrderRepository;
@@ -66,13 +70,23 @@ public class ClientOrderServiceImplTest {
         UUID UUIProduct = UUID.randomUUID();
         expectedProduct.setId(UUIProduct);
 
-        try {
-            clientOrderService.create(actualOrderItems);
-        } catch (RuntimeException re) {
-            String message = "Product not found";
-            assertEquals(message, re.getMessage());
-        }
+        String expectedException = "Product not found";
+        exception.expect(RuntimeException.class);
+        exception.expectMessage(expectedException);
+
+        clientOrderService.create(actualOrderItems);
     }
+
+    @Test
+    public void createWhenOrderListIsEmptyThenThrowException() {
+        Map<UUID, Integer> map = new HashMap<>();
+        String expectedException = "OrderItems is null or empty";
+        exception.expect(RuntimeException.class);
+        exception.expectMessage(expectedException);
+
+        clientOrderService.create(map);
+    }
+
 
     @Test
     public void createWhenProductListNotEmptyThenCreate() {
@@ -114,18 +128,8 @@ public class ClientOrderServiceImplTest {
         expectedClientOrder.setId(actualUUID);
         when(clientOrderRepository.findById(actualUUID))
                 .thenReturn(of(of(expectedClientOrder).get()));
-        ClientOrder actualClientOrder = clientOrderRepository.findById(actualUUID).get();
+        ClientOrder actualClientOrder = clientOrderService.findById(actualUUID);
         assertSame(expectedClientOrder, actualClientOrder);
-    }
-
-
-    @Test
-    public void findByIdWhenUUIDIsNullThenReturnNull() {
-        UUID actualUUID = UUID.randomUUID();
-        when(clientOrderRepository.findById(actualUUID))
-                .thenReturn(null);
-        Optional<ClientOrder> actualOrder = clientOrderRepository.findById(actualUUID);
-        assertNull(actualOrder);
     }
 
     @Test
@@ -150,15 +154,9 @@ public class ClientOrderServiceImplTest {
 
 
     @Test
-    public void markAsPaidWhenClientOrderIsNullThenThrowException() {
-        UUID actualUUID = UUID.randomUUID();
-        try {
-            clientOrderRepository.findById(actualUUID);
-        } catch (RuntimeException re) {
-            String message = "ClientOrder not found";
-            assertEquals(message, re.getMessage());
-            throw re;
-        }
-
+    public void markAsPaidWhenClientOrderIsNullThenNull() {
+        UUID expectedUUID = UUID.randomUUID();
+        Optional<ClientOrder> opt = clientOrderRepository.findById(expectedUUID);
+        assertEquals(Optional.empty(), opt);
     }
 }

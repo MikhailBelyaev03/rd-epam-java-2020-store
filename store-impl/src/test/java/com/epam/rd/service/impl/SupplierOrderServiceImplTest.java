@@ -1,10 +1,10 @@
 package com.epam.rd.service.impl;
 
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,7 +15,9 @@ import com.epam.rd.entity.SupplierOrder;
 import com.epam.rd.entity.SupplierOrderItem;
 import com.epam.rd.repository.ProductRepository;
 import com.epam.rd.repository.SupplierOrderRepository;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class SupplierOrderServiceImplTest {
     private static final String SUPPLIER_ORDER_STATUS_DELIVERED = "DELIVERED";
 
     private static final String SUPPLIER_ORDER_PAYMENT_CALLBACK_URL = null;
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @MockBean
     private SupplierOrderRepository supplierOrderRepository;
@@ -98,17 +103,6 @@ public class SupplierOrderServiceImplTest {
     }
 
     @Test
-    public void markAsDeliveredWhenOrderIsNotFoundThenThrowException() {
-        UUID uuid = UUID.randomUUID();
-        try {
-            supplierOrderRepository.findById(uuid);
-        } catch (RuntimeException re) {
-            String message = "Order for supplier not found by supplier order id";
-            assertEquals(message, re.getMessage());
-        }
-    }
-
-    @Test
     public void markAsDeliveredWhenOrderIsFoundedThenMarkIt() {
         UUID expectedUUID = UUID.randomUUID();
         SupplierOrder expectedSupplierOrder = new SupplierOrder();
@@ -118,26 +112,49 @@ public class SupplierOrderServiceImplTest {
         actualSupplierOrder.setStatus(SUPPLIER_ORDER_STATUS_DELIVERED);
         supplierOrderService.markAsDelivered(expectedUUID);
         verify(supplierOrderRepository).save(actualSupplierOrder);
-        assertEquals("DELIVERED", actualSupplierOrder.getStatus());
+        assertEquals(SUPPLIER_ORDER_STATUS_DELIVERED, actualSupplierOrder.getStatus());
+    }
+
+    @Test
+    public void markAsDeliveredWhenOrderIsNotFoundedThenThrownException() {
+        UUID expectedUUID = UUID.randomUUID();
+        when(supplierOrderRepository.findById(expectedUUID))
+                .thenReturn(empty());
+        try {
+            supplierOrderService.markAsDelivered(expectedUUID);
+        } catch (RuntimeException re) {
+            String message = "Order for supplier not found by supplier order id";
+            assertEquals(message, re.getMessage());
+        }
     }
 
     @Test
     public void checkOrderByPaymentIdWhenOrderIsNullThenReturnNull() {
         UUID actualUUID = UUID.randomUUID();
-        assertThrows(NullPointerException.class,
-                () -> {
-                    supplierOrderRepository.findById(actualUUID).orElseGet(null);
-                });
+        SupplierOrder expectedOrder = new SupplierOrder();
+        expectedOrder.setPaymentId(actualUUID);
+
+        when(supplierOrderRepository.findByPaymentId(actualUUID))
+                .thenReturn(empty());
+        try {
+            supplierOrderService.checkOrderByPaymentId(actualUUID);
+        } catch (RuntimeException re) {
+            String message = "Supplier order not found by payment id";
+            assertEquals(message, re.getMessage());
+        }
+
     }
 
     @Test
     public void checkOrderByPaymentIdWhenOrderIsNotNullThenReturnOrder() {
         UUID actualUUID = UUID.randomUUID();
-        SupplierOrder expectedSupplierOrder = new SupplierOrder();
-        expectedSupplierOrder.setId(actualUUID);
-        when(supplierOrderRepository.findById(actualUUID))
-                .thenReturn(java.util.Optional.of(expectedSupplierOrder));
-        SupplierOrder actualSupplierOrder = supplierOrderRepository.findById(actualUUID).get();
-        assertSame(expectedSupplierOrder, actualSupplierOrder);
+        SupplierOrder expectedOrder = new SupplierOrder();
+        expectedOrder.setPaymentId(actualUUID);
+
+        when(supplierOrderRepository.findByPaymentId(actualUUID))
+                .thenReturn(of(expectedOrder));
+        SupplierOrder actualSupplierOrder = supplierOrderService.checkOrderByPaymentId(actualUUID);
+        assertSame(expectedOrder, actualSupplierOrder);
+
     }
 }
