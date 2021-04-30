@@ -1,0 +1,17 @@
+version: '3.1'
+
+volumes:
+  pg_project:
+
+services:
+  pg_db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=store_user
+      - POSTGRES_USER=store_user
+      - POSTGRES_DB=courses
+    volumes:
+      - pg_project:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
