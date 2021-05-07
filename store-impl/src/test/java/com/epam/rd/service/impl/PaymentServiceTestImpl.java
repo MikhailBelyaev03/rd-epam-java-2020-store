@@ -1,5 +1,14 @@
 package com.epam.rd.service.impl;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import com.epam.rd.Application;
 import com.epam.rd.entity.ClientOrder;
 import com.epam.rd.entity.Payment;
@@ -9,24 +18,12 @@ import com.epam.rd.service.stub.PaymentStubService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.UUID;
-
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -159,5 +156,18 @@ public class PaymentServiceTestImpl {
         } catch (RuntimeException e) {
         }
         assertFalse(actual);
+    }
+
+    @Test
+    public void sellWhenPaymentNotFoundedThenThrowException() {
+        UUID expectedUUID = UUID.randomUUID();
+        when(paymentRepository.findById(expectedUUID))
+                .thenReturn(empty());
+        try {
+            paymentService.sell(expectedUUID);
+        } catch (RuntimeException re) {
+            String message = "Payment is not found";
+            assertEquals(message, re.getMessage());
+        }
     }
 }

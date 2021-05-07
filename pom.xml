@@ -102,10 +102,12 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>${commons-codec.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.9.1</version>
+                <type>maven-plugin</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -122,13 +124,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.5</version>
@@ -136,6 +131,7 @@
                     <excludes>
                         <exclude>com/epam/rd/entity/**/*</exclude>
                         <exclude>com/epam/rd/Application.class</exclude>
+                        <exclude>com/epam/rd/service/stub/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
