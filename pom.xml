@@ -144,6 +144,7 @@
                     <excludes>
                         <exclude>com/epam/rd/entity/**/*</exclude>
                         <exclude>com/epam/rd/Application.class</exclude>
+                        <exclude>com/epam/rd/service/stub/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
